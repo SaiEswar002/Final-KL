@@ -7,23 +7,22 @@ const ContactSection = () => {
         <div className="contact-cards">
           <article className="contact-card emergency">
             <h3 className="card-title">Emergency</h3>
-            <p className="card-text">(237) 681-812-255</p>
-            <p className="card-text">(237) 666-331-894</p>
+            <p className="card-text">108</p>
+            
           </article>
           <article className="contact-card location">
             <h3 className="card-title">Location</h3>
-            <p className="card-text">0123 Some place</p>
-            <p className="card-text">9876 Some country</p>
+            <p className="card-text">Tadepalle (Near Kanaka Durga Varadhi) </p>
+            
           </article>
           <article className="contact-card email">
             <h3 className="card-title">Email</h3>
-            <p className="card-text">fildineeesoe@gmil.com</p>
-            <p className="card-text">myebstudios@gmail.com</p>
+            <p className="card-text">HospitalManagement System@gmail.com</p>
+           
           </article>
           <article className="contact-card hours">
             <h3 className="card-title">Working Hours</h3>
-            <p className="card-text">Mon-Sat 09:00-20:00</p>
-            <p className="card-text">Sunday Emergency only</p>
+            <p className="card-text">24/7 Available</p>
           </article>
         </div>
       </div>
