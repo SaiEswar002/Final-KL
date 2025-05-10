@@ -8,17 +8,15 @@ export function TestimonialSection() {
           className="quote-icon"
         />
         <p className="testimonial-text">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
-          placerat scelerisque tortor ornare ornare. Quisque placerat
-          scelerisque felis vitae tortor augue. Velit nascetur Consequat
-          faucibus porttitor enim et.
+        Welcome to a place where care meets excellence. Our mission is to provide you with expert medical services in a warm, welcoming environment.
+         With a focus on comfort, innovation, and personalized attention, we are here to support your health every step of the way
         </p>
         <img
           loading="lazy"
           src="https://cdn.builder.io/api/v1/image/assets/cf44c0ce78c240a28faac630188f1a27/eebb0a955f88753716f71d8b1c5e6cb2958b72d18bb08efec14061172af463fc?placeholderIfAbsent=true"
           className="divider"
         />
-        <p className="author-name">John Doe</p>
+        <p className="author-name">Johnny</p>
       </div>
 
       <style jsx>{`

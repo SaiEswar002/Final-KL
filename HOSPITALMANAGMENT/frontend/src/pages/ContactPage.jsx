@@ -30,9 +30,9 @@ const ContactPage = () => {
         {/* Contact Information */}
         <div className="contact-info">
           <h2>Our Contact Details</h2>
-          <p><strong>Address:</strong> 123 Healthcare Street, City, Country</p>
-          <p><strong>Phone:</strong> +1 234 567 890</p>
-          <p><strong>Email:</strong> contact@hospitalmanagement.com</p>
+          <p><strong>Address:</strong> Tadepalle (Near Kanaka Durga Varadhi)</p>
+          <p><strong>Phone:</strong> 0866-2536535</p>
+          <p><strong>Email:</strong> HospitalManagement System@gmail.com</p>
           <p><strong>Working Hours:</strong> Mon - Sat: 9:00 AM - 6:00 PM</p>
         </div>
 

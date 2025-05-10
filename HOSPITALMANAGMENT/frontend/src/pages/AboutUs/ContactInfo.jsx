@@ -4,22 +4,22 @@ export function ContactInfo() {
       <ContactCard
         type="emergency"
         title="Emergency"
-        items={["(237) 681-812-255", "(237) 666-331-894"]}
+        items={["108"]}
       />
       <ContactCard
         type="location"
         title="Location"
-        items={["0123 Some place", "9876 Some country"]}
+        items={["Tadepalle (Near Kanaka Durga Varadhi"]}
       />
       <ContactCard
         type="email"
         title="Email"
-        items={["fildineeesoe@gmil.com", "myebstudios@gmail.com"]}
+        items={["HospitalManagement System@gmail.com"]}
       />
       <ContactCard
         type="hours"
         title="Working Hours"
-        items={["Mon-Sat 09:00-20:00", "Sunday Emergency only"]}
+        items={["24/7 Available"]}
       />
 
       <style jsx>{`

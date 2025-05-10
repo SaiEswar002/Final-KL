@@ -4,13 +4,14 @@ function AboutSection() {
   return (
     <>
       <section className="about-section">
-        <h2 className="section-title">Welcome to Meddical</h2>
-        <h3 className="section-subtitle">A Great Place to Receive Care</h3>
+        <h2 className="section-title">Welcome to MedCare Your Trusted Partner in Health and Wellness</h2>
+        <h3 className="section-subtitle">Compassionate Care, Exceptional Service.</h3>
         <p className="section-paragraph">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
-          placerat scelerisque tortor ornare ornare. Convallis felis vitae
-          tortor augue. Velit nascetur proin massa in. Consequat faucibus
-          porttitor enim et.
+        “Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+         Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+         Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.”
+
+
         </p>
         <div className="learn-more">
           <a href="#" className="learn-more-link">

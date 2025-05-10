@@ -9,10 +9,9 @@ const TestimonialSection = () => {
           alt="Quote icon"
         />
         <p className="testimonial-text">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
-          placerat scelerisque tortor ornare ornare. Quisque placerat
-          scelerisque felis vitae tortor augue. Velit nascetur Consequat
-          faucibus porttitor enim et.
+        Experience exceptional healthcare in a place where compassion meets expertise. 
+        Our dedicated team is committed to providing personalized treatment in a supportive and state-of-the-art environment. 
+        Every step of your journey is guided by quality, care, and a passion for your well-being.
         </p>
         <img
           loading="lazy"

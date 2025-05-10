@@ -14,7 +14,7 @@ function MainVisual() {
         <div className="visual-content">
           <h1 className="visual-title">Caring for Life</h1>
           <h2 className="visual-subtitle">
-            Leading the Way in Medical Excellence
+          Advancing Healthcare with Compassion and Innovation
           </h2>
           <button className="services-btn" >Our Services</button>
         </div>

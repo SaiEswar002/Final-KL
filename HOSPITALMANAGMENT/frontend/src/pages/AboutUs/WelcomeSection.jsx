@@ -31,10 +31,10 @@ export function WelcomeSection() {
           </div>
 
           <p className="description">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
-            placerat scelerisque tortor ornare ornare. Quisque placerat
-            scelerisque tortor ornare ornare Convallis felis vitae tortor augue.
-            Velit nascetur proin massa in. Consequat faucibus porttitor enim et.
+          Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
+          curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula.
+          Nulla porttitor accumsan tincidunt. Curabitur aliquet quam id dui posuere blandit.
+          Vivamus suscipit tortor eget felis porttitor volutpat
           </p>
           <p className="description">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque

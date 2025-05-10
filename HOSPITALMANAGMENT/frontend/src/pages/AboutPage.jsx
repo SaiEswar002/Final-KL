@@ -25,17 +25,17 @@ export default function AboutPage() {
           <DoctorCard
             image="https://cdn.builder.io/api/v1/image/assets/cf44c0ce78c240a28faac630188f1a27/bdc118d2fe3571dc8816367c80ef64c4ddf690841c8d7bc8e931f15459138021?placeholderIfAbsent=true"
             name="Doctor's Name"
-            specialty="Neurology"
+            specialty="Dr.Valentin Fuster"
           />
           <DoctorCard
             image="https://cdn.builder.io/api/v1/image/assets/cf44c0ce78c240a28faac630188f1a27/10c01619eef3a414aa4655d12e2acd9a31bd700a38d3992dcfed22ef9a293e50?placeholderIfAbsent=true"
             name="Doctor's Name"
-            specialty="Neurology"
+            specialty="Dr.Mukesh kumar"
           />
           <DoctorCard
             image="https://cdn.builder.io/api/v1/image/assets/cf44c0ce78c240a28faac630188f1a27/a522fa64e597948571da6be9d7aa71799120ac0d854c96100591c0b953bf2ed1?placeholderIfAbsent=true"
             name="Doctor's Name"
-            specialty="Neurology"
+            specialty="Dr.Priyanka"
           />
         </div>
       </section>

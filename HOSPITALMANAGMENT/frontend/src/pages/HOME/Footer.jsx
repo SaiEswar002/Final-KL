@@ -40,10 +40,10 @@ function Footer() {
           </div>
           <div className="footer-section">
             <h4 className="footer-title">Contact Us</h4>
-            <p className="footer-contact">Call: (237) 681-812-255</p>
-            <p className="footer-contact">Email: fildineesoe@gmail.com</p>
+            <p className="footer-contact">Call: 0866-2536535</p>
+            <p className="footer-contact">Email: HospitalManagement System@gmail.com </p>
             <p className="footer-contact">
-              Address: 0123 Some place, Some country
+              Address: Tadepalle (Near Kanaka Durga Varadhi)
             </p>
           </div>
           <div className="footer-section">

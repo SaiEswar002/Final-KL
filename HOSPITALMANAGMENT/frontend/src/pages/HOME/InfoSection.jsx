@@ -7,17 +7,17 @@ function InfoSection() {
       <section className="info-section">
         <InfoCard
           title="Book an Appointment"
-          line1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ut augue orci."
+          line1="Nullam tincidunt, nisl eget vestibulum tempor, sapien justo cursus nunc, vel laoreet nibh erat at erat."
           line2="Pellentesque egestas neque."
         />
         <InfoCard
           title="Emergency Service"
-          line1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla volutpat aliquam velit."
+          line1="Curabitur blandit tempus porttitor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet"
           line2="Alqsa placerat scelerisque tortor ornare ornare."
         />
         <InfoCard
           title="24/7 Support"
-          line1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero."
+          line1="Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet"
           line2="Sed cursus ante dapibus."
         />
       </section>
