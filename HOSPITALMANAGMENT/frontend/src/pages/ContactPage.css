@@ -1,0 +1,128 @@
+/* General Styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  background-color: #ffffff; /* White background */
+  color: #333;
+}
+
+.contact-page {
+  padding: 20px;
+  background-color: #ffffff; /* White background */
+  color: #333;
+}
+
+.contact-page h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #3b82f6; /* Blue color for the header */
+  margin-bottom: 20px;
+}
+
+.contact-intro {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.contact-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.contact-info, .contact-form {
+  background-color: #ffffff; /* White background */
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex: 1 1 400px;
+  max-width: 500px;
+}
+
+.contact-info h2, .contact-form h2 {
+  color: #3b82f6; /* Blue color for subheadings */
+  margin-bottom: 15px;
+}
+
+.contact-info p {
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.contact-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 1rem;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.form-group input, .form-group textarea {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  outline: none;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+  border-color: #3b82f6; /* Blue border on focus */
+}
+
+.submit-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: white;
+  background-color: #3b82f6; /* Blue color for the submit button */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #1D4ED8; /* Darker blue on hover */
+}
+
+/* Why Contact Us Section */
+.why-contact-us {
+  margin-top: 30px;
+  background-color: #ffffff; /* White background */
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 30px auto;
+}
+
+.why-contact-us h2 {
+  text-align: center;
+  color: #3b82f6; /* Blue color for subheadings */
+  margin-bottom: 15px;
+}
+
+.why-contact-us ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  font-size: 1rem;
+  color: #555;
+}
+
+.why-contact-us li {
+  margin-bottom: 10px;
+}

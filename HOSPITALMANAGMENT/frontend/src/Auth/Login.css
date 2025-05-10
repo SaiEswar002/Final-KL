@@ -1,0 +1,160 @@
+/* General Styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4f4f9;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6); /* Dark blue gradient */
+  animation: fadeInBackground 1.5s ease-in-out forwards;
+}
+
+@keyframes fadeInBackground {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.login-box {
+  background-color: #ffffff; /* White background */
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  animation: slideIn 1s ease-out forwards;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.login-box h2 {
+  font-size: 1.8rem;
+  color: #1e3a8a; /* Dark blue */
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.login-box p {
+  font-size: 1rem;
+  color: #555;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.toggle-btn {
+  color: #3b82f6; /* Lighter blue */
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.toggle-btn:hover {
+  color: #1e3a8a; /* Dark blue */
+}
+
+.status-msg {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Form Styles */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+  border-color: #3b82f6; /* Lighter blue */
+}
+
+.submit-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: white;
+  background-color: #1e3a8a; /* Dark blue */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.submit-btn:hover {
+  background-color: #3b82f6; /* Lighter blue */
+  transform: scale(1.05);
+}
+
+.submit-btn:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+/* Forgot Password Link */
+.forgot-password-link {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.forgot-password-link a {
+  color: #3b82f6; /* Lighter blue */
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.forgot-password-link a:hover {
+  color: #1e3a8a; /* Dark blue */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .login-box {
+    padding: 20px;
+  }
+
+  .login-box h2 {
+    font-size: 1.5rem;
+  }
+
+  .form-input {
+    font-size: 0.9rem;
+  }
+
+  .submit-btn {
+    font-size: 0.9rem;
+  }
+}

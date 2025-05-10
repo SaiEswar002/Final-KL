@@ -1,0 +1,53 @@
+/* Container styling */
+.view-booking-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+/* Title styling */
+.booking-title {
+  text-align: center;
+  color: #007bff;
+}
+
+/* No bookings message */
+.no-bookings {
+  text-align: center;
+  color: #555;
+}
+
+/* Table styling */
+.appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+/* Table header row styling */
+.table-header {
+  background-color: #3b82f6;
+  text-align: left;
+}
+
+.table-header th {
+  padding: 10px;
+  border: 1px solid #ddd;
+  color: white;
+}
+
+/* Table body row styling */
+.appointments-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+/* Table row hover effect */
+.appointments-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.appointments-table tr:hover {
+  background-color: #f1f1f1;
+}

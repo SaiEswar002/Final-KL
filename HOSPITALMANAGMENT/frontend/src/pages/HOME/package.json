@@ -1,0 +1,19 @@
+{
+  "name": "hospital-website",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "styled-jsx": "^5.1.2"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.1.4",
+    "vitest": "^0.34.6"
+  },
+  "scripts": {
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage"
+  }
+}

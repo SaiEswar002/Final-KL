@@ -1,0 +1,81 @@
+/* Container styling */
+.book-appointment-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+/* Table styling */
+.appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.appointments-table th,
+.appointments-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.appointments-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  color: #333;
+}
+
+.appointments-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.appointments-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Book button styling */
+.book-button {
+  background-color: #3b82f6; /* Blue color */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.book-button:hover {
+  background-color: #1D4ED8; /* Darker blue on hover */
+}
+
+/* Error message styling */
+.error-message {
+  color: #dc3545; /* Red color for error messages */
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.book-appointment-container h2{
+  color:#3b82f6
+}
+
+/* Selected appointment details */
+.selected-appointment {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.selected-appointment h3 {
+  margin-bottom: 10px;
+  color: #3b82f6; /* Blue color for heading */
+}
+
+.selected-appointment p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #333;
+}

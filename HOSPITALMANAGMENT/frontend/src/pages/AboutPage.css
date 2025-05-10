@@ -1,0 +1,89 @@
+/* General Styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  background-color: #ffffff; /* White background */
+  color: #333;
+}
+
+/* About Page Styles */
+.about-page {
+  text-align: center;
+  padding: 20px;
+  background-color: #ffffff; /* White background */
+  color: #333;
+}
+
+.about-page h1 {
+  font-size: 2.5rem;
+  color: #3b82f6; /* Blue for the main heading */
+  margin-bottom: 30px;
+}
+
+/* About Boxes */
+.about-boxes {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.about-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #ffffff; /* White background */
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.about-box-image {
+  width: 40%; /* Image takes 40% of the box width */
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-box-content {
+  padding: 20px;
+  text-align: left;
+  flex: 1; /* Content takes the remaining space */
+}
+
+.about-box-content h2 {
+  font-size: 1.8rem;
+  color: #3b82f6; /* Blue for subheadings */
+  margin-bottom: 10px;
+}
+
+.about-box-content p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .about-box {
+    flex-direction: column; /* Stack image and content vertically on smaller screens */
+  }
+
+  .about-box-image {
+    width: 100%; /* Image takes full width */
+    height: 200px; /* Set a fixed height for images */
+  }
+
+  .about-box-content {
+    text-align: center;
+  }
+}
