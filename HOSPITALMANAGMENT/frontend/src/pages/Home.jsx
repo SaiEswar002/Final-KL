@@ -5,7 +5,6 @@ import MainVisual from "./home/MainVisual";
 import InfoSection from "./home/InfoSection";
 import AboutSection from "./home/AboutSection";
 import ServicesSection from "./home/ServicesSection";
-import AppointmentForm from "./home/AppointmentForm";
 import DoctorsSection from "./home/DoctorsSection";
 /* import NewsSection from "./NewsSection"; */
 import Footer from "./home/Footer";
@@ -20,7 +19,7 @@ function Home() {
         <InfoSection />
         <AboutSection />
         <ServicesSection />
-        <AppointmentForm />
+        
         <DoctorsSection />
         {/* <NewsSection /> */}
         <Footer />
