@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { bookingApi } from '../api';
 
 const ViewAppointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -10,7 +10,7 @@ const ViewAppointments = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await axios.get('http://localhost:8091/api/appointments');
+        const res = await bookingApi.getAllBookings();
         setAppointments(res.data);
       } catch {
         setAppointments([]);
@@ -24,7 +24,7 @@ const ViewAppointments = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this appointment record?')) return;
     try {
-      await axios.delete(`http://localhost:8091/api/appointments/${id}`);
+      await bookingApi.deleteBooking(id);
       setAppointments(prev => prev.filter(a => a.id !== id));
     } catch {
       alert('Failed to delete appointment.');
@@ -33,7 +33,7 @@ const ViewAppointments = () => {
 
   const handleCancel = async (id) => {
     try {
-      await axios.put(`http://localhost:8091/api/appointments/${id}/cancel`);
+      await bookingApi.cancelBooking(id);
       setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'cancelled' } : a));
     } catch {
       alert('Failed to cancel appointment.');

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { bookingApi } from '../api';
 
 const DoctorDashboard = () => {
   const [doctor, setDoctor] = useState(null);
@@ -13,7 +13,7 @@ const DoctorDashboard = () => {
         const user = JSON.parse(stored);
         setDoctor(user);
         // Fetch appointments assigned to this doctor
-        axios.get('http://localhost:8091/api/appointments')
+        bookingApi.getAllBookings()
           .then(res => {
             const myAppointments = res.data.filter(a => a.doctor === user.username);
             setAppointments(myAppointments);

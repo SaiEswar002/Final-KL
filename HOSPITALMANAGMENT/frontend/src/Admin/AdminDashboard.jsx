@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { userApi, bookingApi } from '../api';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -14,12 +14,12 @@ const AdminDashboard = () => {
     const fetchData = async () => {
       try {
         const [usersRes, appsRes] = await Promise.all([
-          axios.get('http://localhost:8091/api/users/all'),
-          axios.get('http://localhost:8091/api/appointments'),
+          userApi.getAllUsers(),
+          bookingApi.getAllBookings(),
         ]);
         setUsers(usersRes.data);
         setAppointments(appsRes.data);
-      } catch (err) {
+      } catch {
         setError('Failed to load dashboard data.');
       } finally {
         setLoading(false);
@@ -29,13 +29,13 @@ const AdminDashboard = () => {
   }, []);
 
   const patients = users.filter(u => u.role === 'patient');
-  const doctors = users.filter(u => u.role === 'doctor');
+  const doctors  = users.filter(u => u.role === 'doctor');
   const bookedCount = appointments.filter(a => a.status === 'booked').length;
 
   const handleDeleteUser = async (id) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     try {
-      await axios.delete(`http://localhost:8091/api/users/${id}`);
+      await userApi.deleteUser(id);
       setUsers(prev => prev.filter(u => u.id !== id));
     } catch {
       alert('Failed to delete user.');
@@ -68,44 +68,30 @@ const AdminDashboard = () => {
         <div className="grid-4" style={{ marginBottom: '2rem' }}>
           <div className="stat-card" style={{ borderLeftColor: '#0f4c81' }}>
             <div className="stat-card-icon" style={{ background: '#dbeafe' }}>👥</div>
-            <div className="stat-card-info">
-              <h3>{users.length}</h3>
-              <p>Total Users</p>
-            </div>
+            <div className="stat-card-info"><h3>{users.length}</h3><p>Total Users</p></div>
           </div>
           <div className="stat-card" style={{ borderLeftColor: '#10b981' }}>
             <div className="stat-card-icon" style={{ background: '#d1fae5' }}>🩺</div>
-            <div className="stat-card-info">
-              <h3>{doctors.length}</h3>
-              <p>Registered Doctors</p>
-            </div>
+            <div className="stat-card-info"><h3>{doctors.length}</h3><p>Registered Doctors</p></div>
           </div>
           <div className="stat-card" style={{ borderLeftColor: '#f59e0b' }}>
             <div className="stat-card-icon" style={{ background: '#fef3c7' }}>🏥</div>
-            <div className="stat-card-info">
-              <h3>{patients.length}</h3>
-              <p>Registered Patients</p>
-            </div>
+            <div className="stat-card-info"><h3>{patients.length}</h3><p>Registered Patients</p></div>
           </div>
           <div className="stat-card" style={{ borderLeftColor: '#00b4d8' }}>
             <div className="stat-card-icon" style={{ background: '#cffafe' }}>📅</div>
-            <div className="stat-card-info">
-              <h3>{bookedCount}</h3>
-              <p>Active Appointments</p>
-            </div>
+            <div className="stat-card-info"><h3>{bookedCount}</h3><p>Active Appointments</p></div>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="section-heading">
-          <h2>Quick Actions</h2>
-        </div>
+        <div className="section-heading"><h2>Quick Actions</h2></div>
         <div className="quick-actions grid-4" style={{ marginBottom: '2rem' }}>
           {[
             { icon: '📋', label: 'Post Appointment Slot', to: '/admin/post-appointment' },
-            { icon: '📅', label: 'View All Bookings', to: '/admin/view-appointments' },
-            { icon: '👥', label: 'Manage Users', to: '/admin/manage-users' },
-            { icon: '🏥', label: 'Allocate Resources', to: '/admin/allocate-resources' },
+            { icon: '📅', label: 'View All Bookings',     to: '/admin/view-appointments' },
+            { icon: '👥', label: 'Manage Users',          to: '/admin/manage-users' },
+            { icon: '🏥', label: 'Allocate Resources',    to: '/admin/allocate-resources' },
           ].map((action) => (
             <Link key={action.label} to={action.to} className="quick-action-card">
               <span className="qa-icon">{action.icon}</span>
@@ -123,12 +109,7 @@ const AdminDashboard = () => {
           <table className="data-table">
             <thead>
               <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Phone</th>
-                <th>Actions</th>
+                <th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Phone</th><th>Actions</th>
               </tr>
             </thead>
             <tbody>

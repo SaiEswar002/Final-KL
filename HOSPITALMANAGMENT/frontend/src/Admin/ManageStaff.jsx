@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { userApi } from '../api';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -11,10 +11,14 @@ const ManageUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get('http://localhost:8091/api/users/all');
+        // userApi.getAllUsers() sends Authorization: Bearer <token> automatically
+        const res = await userApi.getAllUsers();
         setUsers(res.data);
-      } catch {
-        setError('Failed to load users.');
+      } catch (err) {
+        const msg = err?.response?.status === 403
+          ? 'Access denied. Admin privileges required.'
+          : 'Failed to load users.';
+        setError(msg);
       } finally {
         setLoading(false);
       }
@@ -25,7 +29,7 @@ const ManageUsers = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this user? This action cannot be undone.')) return;
     try {
-      await axios.delete(`http://localhost:8091/api/users/${id}`);
+      await userApi.deleteUser(id);
       setUsers(prev => prev.filter(u => u.id !== id));
     } catch {
       alert('Failed to delete user.');

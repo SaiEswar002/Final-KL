@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { bookingApi } from '../api';
 
 const BookingHistory = () => {
   const [appointments, setAppointments] = useState([]);
@@ -11,7 +11,7 @@ const BookingHistory = () => {
     const fetchAppointments = async () => {
       try {
         if (user?.id) {
-          const res = await axios.get(`http://localhost:8091/api/appointments/user/${user.id}`);
+          const res = await bookingApi.getBookingsByUserId(user.id);
           setAppointments(res.data);
         }
       } catch {
@@ -26,7 +26,7 @@ const BookingHistory = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Remove this booking from your history?')) return;
     try {
-      await axios.delete(`http://localhost:8091/api/appointments/${id}`);
+      await bookingApi.deleteBooking(id);
       setAppointments(prev => prev.filter(a => a.id !== id));
     } catch {
       alert('Failed to remove booking.');

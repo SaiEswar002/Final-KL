@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { doctorApi } from '../api';
 
 const TIME_SLOTS = [
   '09:00 AM – 10:00 AM',
@@ -24,7 +24,7 @@ const PostAppointment = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    axios.get('http://localhost:8091/api/doctors').then(res => setDoctors(res.data)).catch(() => {});
+    doctorApi.getAllDoctors().then(res => setDoctors(res.data)).catch(() => {});
   }, []);
 
   useEffect(() => {
