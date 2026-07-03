@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import './Login.css';
 import { useNavigate } from 'react-router-dom';
-import { userApi } from '../api'; // Correct way to import userApi
+import { userApi } from '../api';
+import './Login.css';
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -9,266 +9,216 @@ function Login() {
     username: '',
     email: '',
     password: '',
-    role: 'user',
-    profilePhoto: null,
-    phoneNumber: '',
+    role: 'patient',
+    phone: '',
     address: '',
     gender: '',
     age: '',
+    specialization: '',
+    department: '',
+    profilePhoto: null,
   });
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState({ text: '', type: '' });
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
-
-  const validateForm = () => {
-    const { username, email, password, phoneNumber, address, gender, age } = formData;
-
-    if (!email || !password) {
-      setMessage('Please enter email and password.');
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setMessage('Please enter a valid email address.');
-      return false;
-    }
-
-    if (!isLogin && (!username || !phoneNumber || !address || !gender || !age)) {
-      setMessage('Please fill in all required fields for signup.');
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleProfilePhotoChange = (e) => {
-    setFormData({ ...formData, profilePhoto: e.target.files[0] });
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePhotoChange = (e) => {
+    setFormData((prev) => ({ ...prev, profilePhoto: e.target.files[0] }));
+  };
+
+  const validate = () => {
+    if (!formData.email || !formData.password) {
+      setMessage({ text: 'Email and password are required.', type: 'error' });
+      return false;
+    }
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(formData.email)) {
+      setMessage({ text: 'Please enter a valid email address.', type: 'error' });
+      return false;
+    }
+    if (!isLogin && !formData.username) {
+      setMessage({ text: 'Username is required.', type: 'error' });
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) return;
+    if (!validate()) return;
 
     setLoading(true);
-    setMessage('');
+    setMessage({ text: '', type: '' });
 
     try {
       if (isLogin) {
-        // Login
-        const response = await userApi.loginUser(formData.email, formData.password);
-        const user = response.data;
-
-        if (user && user.email) {
-          setMessage('Login successful!');
-          localStorage.setItem('user', JSON.stringify(user)); // Save user data in localStorage
-          navigate('/user-profile'); // Navigate to UserProfile.jsx
-        } else {
-          setMessage('Invalid credentials.');
+        const res = await userApi.loginUser(formData.email, formData.password);
+        const user = res.data;
+        if (user?.email) {
+          localStorage.setItem('user', JSON.stringify(user));
+          setMessage({ text: 'Login successful! Redirecting...', type: 'success' });
+          setTimeout(() => {
+            if (user.role === 'admin') navigate('/admin/dashboard');
+            else if (user.role === 'doctor') navigate('/doctor/dashboard');
+            else navigate('/patient/dashboard');
+          }, 800);
         }
       } else {
-        // Signup
-        const {
-          username, email, password, role,
-          profilePhoto, phoneNumber, address, gender, age
-        } = formData;
-
         const form = new FormData();
-        form.append('username', username);
-        form.append('email', email);
-        form.append('password', password);
-        form.append('role', role);
-        form.append('phoneNumber', phoneNumber);
-        form.append('address', address);
-        form.append('gender', gender);
-        form.append('age', age);
-        if (profilePhoto) form.append('profilePhoto', profilePhoto);
+        form.append('username', formData.username);
+        form.append('email', formData.email);
+        form.append('password', formData.password);
+        form.append('role', formData.role);
+        if (formData.phone) form.append('phone', formData.phone);
+        if (formData.address) form.append('address', formData.address);
+        if (formData.gender) form.append('gender', formData.gender);
+        if (formData.age) form.append('age', formData.age);
+        if (formData.specialization) form.append('specialization', formData.specialization);
+        if (formData.department) form.append('department', formData.department);
+        if (formData.profilePhoto) form.append('profilePhoto', formData.profilePhoto);
 
-        const response = await userApi.registerUser(form);
-        const newUser = response.data;
-
-        if (newUser && newUser.email) {
-          setMessage('Signup successful! Please sign in.');
+        const res = await userApi.registerUser(form);
+        if (res.data?.email) {
+          setMessage({ text: 'Registration successful! Please sign in.', type: 'success' });
           setIsLogin(true);
-          setFormData({
-            username: '',
-            email: '',
-            password: '',
-            role: 'user',
-            profilePhoto: null,
-            phoneNumber: '',
-            address: '',
-            gender: '',
-            age: '',
-          });
-        } else {
-          setMessage('Signup failed. Try again.');
+          setFormData({ username: '', email: '', password: '', role: 'patient', phone: '', address: '', gender: '', age: '', specialization: '', department: '', profilePhoto: null });
         }
       }
-    } catch (error) {
-      console.error('Error:', error);
-      setMessage(
-        error.response?.data?.message || 'Server error. Please try again later.'
-      );
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Something went wrong. Please try again.';
+      setMessage({ text: msg, type: 'error' });
     } finally {
       setLoading(false);
     }
   };
 
+  const switchMode = () => {
+    setIsLogin(!isLogin);
+    setMessage({ text: '', type: '' });
+  };
+
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h2>{isLogin ? 'Sign in to your account' : 'Create your account'}</h2>
-        <p>
-          {isLogin ? "Don't have an account? " : 'Already have an account? '}
-          <span
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setMessage('');
-            }}
-            className="toggle-btn"
-          >
-            {isLogin ? 'Sign up' : 'Sign in'}
-          </span>
-        </p>
+    <div className="login-page">
+      {/* Left Panel */}
+      <div className="login-left">
+        <div className="login-left-content">
+          <span className="login-logo-icon">🏥</span>
+          <h2>KL Hospital<br />Management System</h2>
+          <p>Your health, our priority. Manage appointments, doctors, and hospital resources — all in one platform.</p>
+          <div className="login-features">
+            <div className="login-feature">✅ Easy Appointment Booking</div>
+            <div className="login-feature">✅ Real-time Doctor Availability</div>
+            <div className="login-feature">✅ Secure Patient Records</div>
+            <div className="login-feature">✅ 24/7 System Access</div>
+          </div>
+        </div>
+      </div>
 
-        {message && <p className="status-msg">{message}</p>}
+      {/* Right Panel */}
+      <div className="login-right">
+        <div className="login-box">
+          <h1 className="login-title">
+            {isLogin ? 'Welcome Back' : 'Create Account'}
+          </h1>
+          <p className="login-subtitle">
+            {isLogin ? "Don't have an account? " : 'Already registered? '}
+            <button type="button" className="toggle-mode-btn" onClick={switchMode}>
+              {isLogin ? 'Register here' : 'Sign in'}
+            </button>
+          </p>
 
-        <form onSubmit={handleSubmit}>
-          {!isLogin && (
-            <div className="form-group">
-              <input
-                id="username"
-                name="username"
-                type="text"
-                className="form-input"
-                placeholder="Username"
-                value={formData.username}
-                onChange={handleChange}
-              />
+          {message.text && (
+            <div className={`alert alert-${message.type === 'error' ? 'error' : 'success'}`}>
+              {message.text}
             </div>
           )}
 
-          <div className="form-group">
-            <input
-              id="email"
-              name="email"
-              type="email"
-              className="form-input"
-              placeholder="Email address"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <input
-              id="password"
-              name="password"
-              type="password"
-              className="form-input"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-          </div>
-
-          {!isLogin && (
-            <>
+          <form onSubmit={handleSubmit} className="login-form">
+            {/* Register-only fields */}
+            {!isLogin && (
               <div className="form-group">
-                <select
-                  id="role"
-                  name="role"
-                  className="form-input"
-                  value={formData.role}
-                  onChange={handleChange}
-                >
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                  
-                </select>
+                <label className="form-label">Full Name *</label>
+                <input name="username" className="form-control" placeholder="Your full name" value={formData.username} onChange={handleChange} required />
               </div>
+            )}
 
-              <div className="form-group">
-                <input
-                  id="profilePhoto"
-                  name="profilePhoto"
-                  type="file"
-                  className="form-input"
-                  onChange={handleProfilePhotoChange}
-                />
-              </div>
+            <div className="form-group">
+              <label className="form-label">Email Address *</label>
+              <input name="email" type="email" className="form-control" placeholder="you@example.com" value={formData.email} onChange={handleChange} required />
+            </div>
 
-              <div className="form-group">
-                <input
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  type="text"
-                  className="form-input"
-                  placeholder="Phone Number"
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                />
-              </div>
+            <div className="form-group">
+              <label className="form-label">Password *</label>
+              <input name="password" type="password" className="form-control" placeholder="••••••••" value={formData.password} onChange={handleChange} required />
+            </div>
 
-              <div className="form-group">
-                <input
-                  id="address"
-                  name="address"
-                  type="text"
-                  className="form-input"
-                  placeholder="Address"
-                  value={formData.address}
-                  onChange={handleChange}
-                />
-              </div>
+            {!isLogin && (
+              <>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Role *</label>
+                    <select name="role" className="form-control" value={formData.role} onChange={handleChange}>
+                      <option value="patient">Patient</option>
+                      <option value="doctor">Doctor</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Gender</label>
+                    <select name="gender" className="form-control" value={formData.gender} onChange={handleChange}>
+                      <option value="">Select Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
 
-              <div className="form-group">
-                <select
-                  id="gender"
-                  name="gender"
-                  className="form-input"
-                  value={formData.gender}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Phone</label>
+                    <input name="phone" className="form-control" placeholder="+91 9xxxxxxxx" value={formData.phone} onChange={handleChange} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Age</label>
+                    <input name="age" type="number" className="form-control" placeholder="Age" value={formData.age} onChange={handleChange} />
+                  </div>
+                </div>
 
-              <div className="form-group">
-                <input
-                  id="age"
-                  name="age"
-                  type="number"
-                  className="form-input"
-                  placeholder="Age"
-                  value={formData.age}
-                  onChange={handleChange}
-                />
-              </div>
-            </>
-          )}
+                <div className="form-group">
+                  <label className="form-label">Address</label>
+                  <input name="address" className="form-control" placeholder="City, State" value={formData.address} onChange={handleChange} />
+                </div>
 
-          <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? 'Processing...' : isLogin ? 'Sign in' : 'Sign up'}
-          </button>
-        </form>
+                {formData.role === 'doctor' && (
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label">Specialization</label>
+                      <input name="specialization" className="form-control" placeholder="e.g. Cardiology" value={formData.specialization} onChange={handleChange} />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Department</label>
+                      <input name="department" className="form-control" placeholder="e.g. OPD" value={formData.department} onChange={handleChange} />
+                    </div>
+                  </div>
+                )}
 
-        {isLogin && (
-          <div className="forgot-password-link">
-            <a href="/forgot-password">Forgot your password?</a>
-          </div>
-        )}
+                <div className="form-group">
+                  <label className="form-label">Profile Photo</label>
+                  <input type="file" className="form-control" accept="image/*" onChange={handlePhotoChange} />
+                </div>
+              </>
+            )}
+
+            <button type="submit" className="btn btn-primary btn-submit" disabled={loading}>
+              {loading ? <><span className="btn-spinner" /> Processing...</> : (isLogin ? 'Sign In' : 'Create Account')}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

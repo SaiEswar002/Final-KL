@@ -1,102 +1,75 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './BookAppointment.css';
 
 const BookAppointment = () => {
-  const [appointments, setAppointments] = useState([]);
-  const [appointmentData, setAppointmentData] = useState({
-    hospital: '',
-    doctor: '',
-    date: '',
-    timeSlot: '',
-    description: '',
-    image: null,
-  });
+  const [slots, setSlots] = useState([]);
+  const [search, setSearch] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedAppointments = JSON.parse(localStorage.getItem('appointments')) || [];
-    console.log('Retrieved Appointments:', storedAppointments); // Debugging
-    setAppointments(storedAppointments);
+    const stored = JSON.parse(localStorage.getItem('appointments') || '[]');
+    setSlots(stored);
   }, []);
 
-  const handleBook = (appointment) => {
-    // Redirect to the Payment page with the selected appointment details
-    navigate('/payment', { state: { appointment } });
+  const handleBook = (slot) => {
+    navigate('/payment', { state: { appointment: slot } });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const newAppointment = {
-      ...appointmentData,
-    };
-
-    const existingAppointments = JSON.parse(localStorage.getItem('appointments')) || [];
-    const updatedAppointments = [...existingAppointments, newAppointment];
-    localStorage.setItem('appointments', JSON.stringify(updatedAppointments));
-
-    alert('Appointment posted successfully!');
-    setAppointmentData({
-      hospital: '',
-      doctor: '',
-      date: '',
-      timeSlot: '',
-      description: '',
-      image: null,
-    });
-  };
+  const filtered = slots.filter(s =>
+    s.doctor?.toLowerCase().includes(search.toLowerCase()) ||
+    s.hospital?.toLowerCase().includes(search.toLowerCase()) ||
+    s.date?.includes(search)
+  );
 
   return (
-    <div className="book-appointment-container">
-      <h2>Book an Appointment</h2>
-      {appointments.length === 0 ? (
-        <p>No appointments available. Please check back later.</p>
-      ) : (
-        <table className="appointments-table">
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Hospital</th>
-              <th>Doctor</th>
-              <th>Date</th>
-              <th>Time Slot</th>
-              <th>Description</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {appointments.map((appointment, index) => (
-              <tr key={index}>
-                <td>
-                  {appointment.image ? (
-                    <img
-                      src={appointment.image}
-                      alt="Appointment"
-                      style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                    />
-                  ) : (
-                    'No Image'
-                  )}
-                </td>
-                <td>{appointment.hospital}</td>
-                <td>{appointment.doctor}</td>
-                <td>{appointment.date}</td>
-                <td>{appointment.timeSlot}</td>
-                <td>{appointment.description}</td>
-                <td>
-                  <button
-                    onClick={() => handleBook(appointment)}
-                    className="book-button"
-                  >
-                    Book
-                  </button>
-                </td>
-              </tr>
+    <div className="page-wrapper">
+      <div className="page-content">
+        <div className="dash-header">
+          <div>
+            <h1>Book an Appointment</h1>
+            <p className="text-muted">Browse available appointment slots and book one that fits your schedule.</p>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="filters-bar" style={{ marginBottom: '1.5rem' }}>
+          <input className="form-control search-input"
+            placeholder="🔍  Search by doctor, hospital, or date..."
+            value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+
+        {filtered.length === 0 ? (
+          <div className="empty-state card">
+            <div className="empty-state-icon">📅</div>
+            <h3>No Appointment Slots Available</h3>
+            <p className="text-muted" style={{ marginTop: 8 }}>
+              The admin hasn't posted any available slots yet. Please check back later or contact us.
+            </p>
+          </div>
+        ) : (
+          <div className="slots-grid">
+            {filtered.map((slot, idx) => (
+              <div key={idx} className="slot-card card">
+                <div className="slot-header">
+                  <div className="slot-hospital">🏥 {slot.hospital}</div>
+                  <span className="badge badge-success">Available</span>
+                </div>
+                <div className="slot-doctor">👨‍⚕️ Dr. {slot.doctor}</div>
+                <div className="slot-details">
+                  <div className="slot-detail"><span>📅</span> <span>{slot.date}</span></div>
+                  <div className="slot-detail"><span>🕐</span> <span>{slot.timeSlot}</span></div>
+                </div>
+                {slot.description && (
+                  <p className="slot-desc text-muted text-sm">{slot.description}</p>
+                )}
+                <button className="btn btn-primary btn-slot" onClick={() => handleBook(slot)}>
+                  Confirm Booking →
+                </button>
+              </div>
             ))}
-          </tbody>
-        </table>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

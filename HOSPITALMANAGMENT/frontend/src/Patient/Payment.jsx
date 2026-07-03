@@ -1,120 +1,98 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { bookingApi } from '../api'; // Correctly import bookingApi
+import { bookingApi } from '../api';
 
-const Payment = () => {
+const ConfirmBooking = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { appointment } = location.state || {};
 
-  const handlePayment = async (e) => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  const handleConfirm = async (e) => {
     e.preventDefault();
 
+    if (!appointment) {
+      alert('Invalid appointment data. Please go back and select a slot.');
+      return;
+    }
+
     try {
-        // Replace with the logged-in user's ID
-        const userId = 1;
+      const bookingData = {
+        userId: user.id || 1,
+        hospital: appointment.hospital,
+        doctor: appointment.doctor,
+        date: appointment.date,
+        timeSlot: appointment.timeSlot,
+        description: appointment.description || null,
+      };
 
-        // Ensure appointment data is valid
-        if (!appointment || !appointment.date) {
-            console.error('Invalid appointment data:', appointment);
-            alert('Invalid appointment details. Please try again.');
-            return;
-        }
+      await bookingApi.createBooking(bookingData);
 
-        // Prepare booking data
-        const bookingData = {
-            userId,
-            hospital: appointment.hospital,
-            doctor: appointment.doctor,
-            date: appointment.date || new Date().toISOString().split('T')[0], // Default to today's date
-            timeSlot: appointment.timeSlot,
-            description: appointment.description || null, // Set to null if not provided
-        };
-
-        // Log the booking data for debugging
-        console.log('Booking Data:', bookingData);
-
-        // Send booking data to the backend
-        const response = await bookingApi.createBooking(bookingData);
-
-        alert('Payment successful! Your appointment has been booked.');
-
-        // Redirect to the ViewBooking page
-        navigate('/view-booking');
+      navigate('/booking-history', { replace: true });
     } catch (error) {
-        console.error('Error booking appointment:', error);
-        alert('Failed to book appointment. Please try again.');
+      alert('Failed to confirm booking. Please try again.');
     }
   };
 
+  if (!appointment) {
+    return (
+      <div className="page-wrapper">
+        <div className="page-content" style={{ maxWidth: 600 }}>
+          <div className="empty-state card">
+            <div className="empty-state-icon">❌</div>
+            <h3>No Appointment Selected</h3>
+            <button className="btn btn-primary" style={{ marginTop: '1rem' }} onClick={() => navigate('/book-appointment')}>
+              Browse Appointments
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-      <h2 style={{ textAlign: 'center', color: '#007bff' }}>Payment</h2>
-      <form onSubmit={handlePayment} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <p>
-          <strong>Hospital:</strong> {appointment.hospital}
-        </p>
-        <p>
-          <strong>Doctor:</strong> {appointment.doctor}
-        </p>
-        <p>
-          <strong>Date:</strong> {appointment.date}
-        </p>
-        <p>
-          <strong>Time Slot:</strong> {appointment.timeSlot}
-        </p>
-        <p>
-          <strong>Description:</strong> {appointment.description}
-        </p>
-        <div>
-          <label style={{ fontWeight: 'bold' }}>Card Number:</label>
-          <input
-            type="text"
-            name="cardNumber"
-            required
-            placeholder="Enter your card number"
-            style={{
-              width: '100%',
-              padding: '10px',
-              marginTop: '5px',
-              borderRadius: '5px',
-              border: '1px solid #ccc',
-            }}
-          />
+    <div className="page-wrapper">
+      <div className="page-content" style={{ maxWidth: 600 }}>
+        <h1 style={{ marginBottom: '0.5rem' }}>Confirm Booking</h1>
+        <p className="text-muted" style={{ marginBottom: '2rem' }}>Review your appointment details before confirming.</p>
+
+        <div className="card" style={{ marginBottom: '1.5rem' }}>
+          <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
+            📅 Appointment Details
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {[
+              { icon: '🏥', label: 'Hospital', value: appointment.hospital },
+              { icon: '🩺', label: 'Doctor', value: `Dr. ${appointment.doctor}` },
+              { icon: '📅', label: 'Date', value: appointment.date },
+              { icon: '🕐', label: 'Time', value: appointment.timeSlot },
+              ...(appointment.description ? [{ icon: '📝', label: 'Notes', value: appointment.description }] : []),
+            ].map(({ icon, label, value }) => (
+              <div key={label} className="profile-info-item">
+                <span className="info-label">{icon} {label}</span>
+                <span className="info-value">{value}</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <div>
-          <label style={{ fontWeight: 'bold' }}>CVV:</label>
-          <input
-            type="text"
-            name="cvv"
-            required
-            placeholder="Enter CVV"
-            style={{
-              width: '100%',
-              padding: '10px',
-              marginTop: '5px',
-              borderRadius: '5px',
-              border: '1px solid #ccc',
-            }}
-          />
+
+        <div className="card">
+          <h3 style={{ marginBottom: '0.5rem' }}>Booked by</h3>
+          <p className="text-muted text-sm">{user.username} — {user.email}</p>
         </div>
-        <button
-          type="submit"
-          style={{
-            backgroundColor: '#007bff',
-            color: 'white',
-            padding: '10px 15px',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '16px',
-          }}
-        >
-          Pay and Book
-        </button>
-      </form>
+
+        <div style={{ display: 'flex', gap: '12px', marginTop: '1.5rem' }}>
+          <button className="btn btn-primary btn-lg" onClick={handleConfirm}>
+            ✅ Confirm Appointment
+          </button>
+          <button className="btn btn-outline btn-lg" onClick={() => navigate(-1)}>
+            ← Go Back
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Payment;
+export default ConfirmBooking;

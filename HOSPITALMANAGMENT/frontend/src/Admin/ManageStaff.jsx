@@ -1,164 +1,143 @@
 import React, { useState, useEffect } from 'react';
-import './ManageStaff.css';
-const StaffManagement = () => {
-  const [staffMembers, setStaffMembers] = useState([]);
-  const [newStaff, setNewStaff] = useState({
-    name: "",
-    role: "",
-    department: "",
-    workToday: false,
-    date: "", 
-  });
-  const [showForm, setShowForm] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // State for search query
+import axios from 'axios';
 
-  // Load staff members from localStorage when the component mounts
+const ManageUsers = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterRole, setFilterRole] = useState('all');
+  const [error, setError] = useState('');
+
   useEffect(() => {
-    const storedStaff = localStorage.getItem("staffMembers");
-    if (storedStaff) {
-      setStaffMembers(JSON.parse(storedStaff));
-    }
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get('http://localhost:8091/api/users/all');
+        setUsers(res.data);
+      } catch {
+        setError('Failed to load users.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
   }, []);
 
-  // Save staff members to localStorage whenever they change
-  useEffect(() => {
-    if (staffMembers.length > 0) {
-      localStorage.setItem("staffMembers", JSON.stringify(staffMembers));
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this user? This action cannot be undone.')) return;
+    try {
+      await axios.delete(`http://localhost:8091/api/users/${id}`);
+      setUsers(prev => prev.filter(u => u.id !== id));
+    } catch {
+      alert('Failed to delete user.');
     }
-  }, [staffMembers]);
-
-  const toggleWorkStatus = (id) => {
-    setStaffMembers((prevState) =>
-      prevState.map((staff) =>
-        staff.id === id ? { ...staff, workToday: !staff.workToday } : staff
-      )
-    );
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewStaff((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  const filtered = users.filter(u => {
+    const matchSearch = u.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        u.email?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchRole = filterRole === 'all' || u.role === filterRole;
+    return matchSearch && matchRole;
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString();
-
-    const newStaffMember = {
-      ...newStaff,
-      id: staffMembers.length + 1,
-      date: formattedDate,
-    };
-
-    const updatedStaffMembers = [...staffMembers, newStaffMember];
-    setStaffMembers(updatedStaffMembers);
-    setNewStaff({
-      name: "",
-      role: "",
-      department: "",
-      workToday: false,
-      date: "",
-    });
-    setShowForm(false); 
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value); // Update the search query
-  };
-
-  // Filter staff members based on the search query
-  const filteredStaffMembers = staffMembers.filter((staff) =>
-    staff.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  if (loading) return <div className="page-wrapper"><div className="loading-spinner"><div className="spinner" /></div></div>;
 
   return (
-    <div>
-      <h2>Staff Management</h2>
+    <div className="page-wrapper">
+      <div className="page-content">
+        <div className="dash-header">
+          <div>
+            <h1>Manage Users</h1>
+            <p className="text-muted">{users.length} total users registered in the system</p>
+          </div>
+        </div>
 
-      {/* Search bar to filter staff members by name */}
-      <input
-        type="text"
-        placeholder="Search by Name"
-        value={searchQuery}
-        onChange={handleSearchChange}
-        className="search-bar"
-      />
+        {error && <div className="alert alert-error">{error}</div>}
 
-      {/* Button to show the Add Staff Form */}
-      <button onClick={() => setShowForm(true)} className="add-staff-btn">
-        Add New Staff
-      </button>
+        {/* Filters */}
+        <div className="filters-bar">
+          <input
+            className="form-control search-input"
+            placeholder="🔍  Search by name or email..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+          <select className="form-control role-select" value={filterRole} onChange={e => setFilterRole(e.target.value)}>
+            <option value="all">All Roles</option>
+            <option value="patient">Patients</option>
+            <option value="doctor">Doctors</option>
+            <option value="admin">Admins</option>
+          </select>
+        </div>
 
-      {/* Form to Add New Staff */}
-      {showForm && (
-        <form onSubmit={handleSubmit} className="add-staff-form">
-          <label>Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={newStaff.name}
-            onChange={handleInputChange}
-            required
-          />
-          <label>Role:</label>
-          <input
-            type="text"
-            name="role"
-            value={newStaff.role}
-            onChange={handleInputChange}
-            required
-          />
-          <label>Department:</label>
-          <input
-            type="text"
-            name="department"
-            value={newStaff.department}
-            onChange={handleInputChange}
-            required
-          />
-          <label>Work Today:</label>
-          <input
-            type="checkbox"
-            name="workToday"
-            checked={newStaff.workToday}
-            onChange={(e) => setNewStaff((prevState) => ({ ...prevState, workToday: e.target.checked }))}
-          />
-          <button type="submit">Add Staff</button>
-        </form>
-      )}
-
-      {/* Staff List */}
-      <div className="staff-list">
-        {filteredStaffMembers.length > 0 ? (
-          filteredStaffMembers.map((staff) => (
-            <div key={staff.id} className="staff-card">
-              <div className="staff-details">
-                <h3>{staff.name}</h3>
-                <p><strong>Role:</strong> {staff.role}</p>
-                <p><strong>Department:</strong> {staff.department}</p>
-                <p><strong>Work Today:</strong> {staff.workToday ? "Yes" : "No"}</p>
-                <p><strong>Date:</strong> {staff.date}</p>
-                {/* Toggle button to update work status */}
-                <button
-                  className={`status-btn ${staff.workToday ? 'active' : 'inactive'}`}
-                  onClick={() => toggleWorkStatus(staff.id)}
-                >
-                  {staff.workToday ? "Mark as Inactive" : "Mark as Active"}
-                </button>
+        {/* Stats */}
+        <div className="grid-3" style={{ marginBottom: '1.5rem' }}>
+          {['patient', 'doctor', 'admin'].map(role => (
+            <div key={role} className="stat-card" style={{ borderLeftColor: role === 'doctor' ? '#10b981' : role === 'admin' ? '#3b82f6' : '#f59e0b' }}>
+              <div className="stat-card-icon" style={{ background: role === 'doctor' ? '#d1fae5' : role === 'admin' ? '#dbeafe' : '#fef3c7', fontSize: '22px' }}>
+                {role === 'doctor' ? '🩺' : role === 'admin' ? '🔐' : '🏥'}
+              </div>
+              <div className="stat-card-info">
+                <h3>{users.filter(u => u.role === role).length}</h3>
+                <p style={{ textTransform: 'capitalize' }}>{role}s</p>
               </div>
             </div>
-          ))
-        ) : (
-          <p>No staff members found.</p>
-        )}
+          ))}
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: 'auto' }}>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>User</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Phone</th>
+                <th>Gender</th>
+                <th>Specialization</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan="8" className="empty-state">No users found.</td></tr>
+              ) : (
+                filtered.map((user, idx) => (
+                  <tr key={user.id}>
+                    <td className="text-muted text-sm">{idx + 1}</td>
+                    <td>
+                      <div className="user-name-cell">
+                        <div className="table-avatar">{user.username?.charAt(0).toUpperCase()}</div>
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{user.username}</div>
+                          {user.department && <div className="text-muted text-xs">{user.department}</div>}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="text-muted text-sm">{user.email}</td>
+                    <td>
+                      <span className={`badge ${user.role === 'admin' ? 'badge-info' : user.role === 'doctor' ? 'badge-success' : 'badge-secondary'}`}>
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className="text-muted text-sm">{user.phone || '—'}</td>
+                    <td className="text-muted text-sm">{user.gender || '—'}</td>
+                    <td className="text-muted text-sm">{user.specialization || '—'}</td>
+                    <td>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(user.id)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
 };
 
-export default StaffManagement;
-// This code is a React component for managing staff members in a hospital management system. It allows the admin to add new staff members, toggle their work status, and search for staff members by name. The staff data is stored in localStorage to persist across page reloads.
+export default ManageUsers;

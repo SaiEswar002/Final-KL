@@ -1,390 +1,137 @@
-# 🏥 Hospital Management System
+# 🏥 KL Hospital Management System
 
-A full-stack **Hospital Management System (HMS)** developed using **Java Spring Boot**, **React.js**, and **MySQL**. The application digitalizes hospital operations by providing a centralized platform for patient management, appointment booking, staff administration, and hospital resource allocation.
-
----
-
-## 📖 Overview
-
-The Hospital Management System is designed to simplify hospital administration through a modern web application. It replaces manual workflows with a responsive interface and secure backend services, enabling administrators and patients to efficiently manage healthcare operations.
-
-The system follows a **client-server architecture**, where:
-
-- **Frontend:** React.js + Vite
-- **Backend:** Java Spring Boot
-- **Database:** MySQL
-- **Communication:** REST APIs using Axios
+A full-stack **Hospital Management System** built with **Spring Boot** (Java) and **React** (Vite), designed as a final-year engineering project.
 
 ---
 
-# ✨ Features
+## 🛠️ Technology Stack
 
-## 👤 Patient
-
-- User Registration
-- Secure Login
-- Profile Management
-- Profile Photo Upload
-- View Available Doctors
-- Book Appointments
-- Mock Payment Gateway
-- View Booking History
+| Layer | Technology |
+|---|---|
+| **Backend** | Spring Boot 3.1.4, Spring Security, Spring Data JPA |
+| **Database** | MySQL (`hospital_management_db`) |
+| **Frontend** | React 19, Vite, React Router DOM v7 |
+| **Styling** | Vanilla CSS with custom design system (Inter font) |
+| **Email** | EmailJS (Contact form) |
+| **ORM** | Hibernate / JPA with Lombok |
 
 ---
 
-## 🩺 Administrator
-
-- Admin Login
-- Dashboard
-- Manage Patients
-- Delete User Accounts
-- Manage Staff
-- Post Appointment Slots
-- Allocate Hospital Beds
-- View All Bookings
-- Export Resource Data
-
----
-
-## 👨‍⚕️ Doctor
-
-- Doctor Dashboard
-- View Assigned Schedule
-- Future-ready module for expansion
-
----
-
-# 🛠 Tech Stack
-
-## Frontend
-
-- React.js
-- Vite
-- React Router DOM
-- Axios
-- HTML5
-- CSS3
-
-## Backend
-
-- Java 17
-- Spring Boot
-- Spring Data JPA
-- Hibernate
-- Spring Security
-
-## Database
-
-- MySQL
-
-## Tools
-
-- Maven
-- Lombok
-- Git
-- GitHub
-
----
-
-# 🏗 Architecture
+## 📁 Project Structure
 
 ```
-                React Frontend
-                     │
-               Axios REST APIs
-                     │
-             Spring Boot Backend
-                     │
-          Spring Data JPA / Hibernate
-                     │
-                 MySQL Database
-```
-
----
-
-# 📂 Project Structure
-
-```
-HospitalManagementSystem/
+HOSPITALMANAGMENT/
+├── backend/                  # Spring Boot Application
+│   └── src/main/java/com/hms/
+│       ├── HospitalManagementApplication.java
+│       ├── config/           # SecurityConfig, WebConfig
+│       ├── controller/       # UserController, AppointmentController, DoctorController
+│       ├── service/          # UserService, AppointmentService
+│       ├── repository/       # UserRepository, AppointmentRepository
+│       ├── entity/           # User, Appointment
+│       ├── dto/              # LoginRequest, AppointmentDTO
+│       └── exception/        # ResourceNotFoundException
 │
-├── backend/
-│   ├── controller/
-│   ├── entity/
-│   ├── repository/
-│   ├── service/
-│   ├── config/
-│   ├── request/
-│   └── application.properties
-│
-├── frontend/
-│   ├── src/
-│   │   ├── Admin/
-│   │   ├── Patient/
-│   │   ├── Doctor/
-│   │   ├── Auth/
-│   │   ├── Common/
-│   │   └── pages/
-│   │
-│   ├── App.jsx
-│   ├── api.js
-│   └── main.jsx
-│
-└── README.md
+└── frontend/                 # React + Vite Application
+    └── src/
+        ├── Admin/            # AdminDashboard, ManageUsers, PostAppointment, ViewAppointments, AllocateResources
+        ├── Auth/             # Login (with Register tab)
+        ├── Common/           # Navbar, Footer
+        ├── Doctor/           # DoctorDashboard
+        ├── Patient/          # PatientDashboard, BookAppointment, ConfirmBooking, BookingHistory
+        ├── pages/            # HomePage, ContactPage, DoctorsPage
+        ├── api.js            # Axios API client (userApi, bookingApi, doctorApi)
+        └── index.css         # Global design system (CSS variables, components)
 ```
 
 ---
 
-# ☕ Java Implementation
+## 🚀 Getting Started
 
-This project primarily demonstrates Java backend development using Spring Boot.
+### Prerequisites
+- Java 17+
+- Node.js 18+
+- MySQL 8.0+
 
-## Java Concepts Used
-
-- Object-Oriented Programming (OOP)
-- Encapsulation
-- Abstraction
-- Inheritance
-- Polymorphism
-- Interfaces
-- Collections Framework
-- Exception Handling
-- File Handling
-- RESTful Web Services
-- Dependency Injection
-- MVC Architecture
-
----
-
-## Spring Boot Features
-
-- REST Controllers
-- Dependency Injection
-- Spring Data JPA
-- Hibernate ORM
-- Bean Configuration
-- CORS Configuration
-- Security Configuration
-
----
-
-## Java Collections
-
-- List
-- Optional
-- JpaRepository
-
----
-
-## Java Annotations
-
-- @SpringBootApplication
-- @RestController
-- @RequestMapping
-- @GetMapping
-- @PostMapping
-- @PutMapping
-- @DeleteMapping
-- @Autowired
-- @Entity
-- @Table
-- @Id
-- @GeneratedValue
-- @Column
-- @Service
-- @Configuration
-- @Bean
-
----
-
-# 💾 Database
-
-The application uses **MySQL** for persistent storage.
-
-### Main Tables
-
-- Users
-- Bookings
-
-The backend uses **Hibernate ORM** to map Java objects directly to relational database tables.
-
----
-
-# 📸 File Upload
-
-Users can upload profile pictures during registration.
-
-Features:
-
-- Multipart File Upload
-- Automatic Filename Generation
-- Static File Serving
-- Image Persistence
-
----
-
-# 🔄 Workflow
-
-```
-Patient Registration
-        │
-        ▼
-Login
-        │
-        ▼
-Book Appointment
-        │
-        ▼
-Mock Payment
-        │
-        ▼
-Booking Stored in Database
-        │
-        ▼
-View Booking History
+### 1. Database Setup
+```sql
+CREATE DATABASE hospital_management_db;
 ```
 
----
-
-# 🚀 Getting Started
-
-## Clone Repository
-
+### 2. Backend Setup
 ```bash
-git clone https://github.com/yourusername/HospitalManagementSystem.git
+cd HOSPITALMANAGMENT/backend
+
+# Edit src/main/resources/application.properties
+# Set your MySQL password: spring.datasource.password=YOUR_PASSWORD
+
+./mvnw spring-boot:run
 ```
+Backend runs on: `http://localhost:8091`
 
----
-
-## Backend
-
-Navigate to backend
-
+### 3. Frontend Setup
 ```bash
-cd backend
-```
-
-Run Spring Boot
-
-```bash
-mvn spring-boot:run
-```
-
-Backend runs on
-
-```
-http://localhost:8091
-```
-
----
-
-## Frontend
-
-Navigate to frontend
-
-```bash
-cd frontend
-```
-
-Install packages
-
-```bash
+cd HOSPITALMANAGMENT/frontend
 npm install
-```
-
-Run project
-
-```bash
 npm run dev
 ```
-
-Frontend runs on
-
-```
-http://localhost:5173
-```
+Frontend runs on: `http://localhost:5173`
 
 ---
 
-# 📚 APIs
+## 🔑 User Roles
 
-## User APIs
+| Role | Access |
+|---|---|
+| **Patient** | Register, book appointments, view booking history, manage profile |
+| **Doctor** | View assigned appointments, schedule overview |
+| **Admin** | Full dashboard, manage users, post appointment slots, bed allocation |
 
-- Register User
-- Login
-- Logout
-- Update User
-- Delete User
-- View Users
-
-## Booking APIs
-
-- Create Booking
-- View User Bookings
-- View All Bookings
+### Default Admin Account
+Create an admin by registering with `role=admin` via the signup form, or directly insert into the database.
 
 ---
 
-# 🔐 Security
+## 📡 API Endpoints
 
-Current implementation includes:
+### User API (`/api/users`)
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/register` | Register new user |
+| POST | `/login` | User login |
+| GET | `/all` | Get all users (admin) |
+| GET | `/{id}` | Get user by ID |
+| PUT | `/update/{id}` | Update user profile |
+| DELETE | `/{id}` | Delete user |
 
-- Input Validation
-- CORS Configuration
-- Request Validation
+### Appointment API (`/api/appointments`)
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/` | Create appointment |
+| GET | `/` | Get all appointments |
+| GET | `/user/{userId}` | Get appointments by user |
+| PUT | `/{id}/cancel` | Cancel appointment |
+| DELETE | `/{id}` | Delete appointment |
 
-Future improvements:
-
-- JWT Authentication
-- BCrypt Password Encryption
-- Role-Based Access Control (RBAC)
-- HTTPS Deployment
-
----
-
-# 📈 Future Enhancements
-
-- JWT Authentication
-- Real Payment Gateway Integration
-- Doctor Appointment Scheduling
-- Email Notifications
-- SMS Alerts
-- Online Consultation
-- Medical Records Module
-- Inventory Management
-- Database Storage for Staff & Beds
-- Docker Deployment
-- Cloud Hosting
+### Doctor API (`/api/doctors`)
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Get all doctors |
+| GET | `/{id}` | Get doctor by ID |
 
 ---
 
-# 🎯 Learning Outcomes
+## 🎨 Design System
 
-This project helped in understanding:
-
-- Full Stack Java Development
-- Spring Boot Framework
-- REST API Development
-- React Integration
-- MySQL Database Design
-- Hibernate ORM
-- MVC Architecture
-- File Handling
-- State Management
-- Software Architecture
-- Object-Oriented Programming
+- **Font**: Inter (Google Fonts)
+- **Primary Color**: `#0f4c81` (Hospital Blue)
+- **Accent Color**: `#00b4d8` (Medical Teal)
+- **Background**: `#f0f4f8`
+- **Components**: Cards, Data Tables, Badges, Stat Cards, Alerts, Form Controls
 
 ---
 
-# 👨‍💻 Developed By
+## 👨‍💻 Developed By
 
-**Sai Eswar**
-
-B.Tech Computer Science & Engineering
-
-Koneru Lakshmaiah Education Foundation (KL University)
-
----
-
-# 📜 License
-
-This project is developed for educational and academic purposes.
+Final Year B.Tech Computer Science Engineering Project  
+**KL University** — Hospital Management System

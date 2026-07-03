@@ -1,266 +1,191 @@
 import React, { useState, useEffect } from 'react';
-import './AllocateResources.css';
+
 const AllocateResources = () => {
   const [beds, setBeds] = useState([]);
   const [allocations, setAllocations] = useState([]);
   const [newBedName, setNewBedName] = useState('');
   const [selectedBedId, setSelectedBedId] = useState('');
   const [patientName, setPatientName] = useState('');
-  const [date, setDate] = useState('');
+  const [allocationDate, setAllocationDate] = useState('');
   const [filter, setFilter] = useState('');
+  const [message, setMessage] = useState({ text: '', type: '' });
 
-  // Load data from localStorage when the page loads
   useEffect(() => {
     try {
-      const storedBeds = JSON.parse(localStorage.getItem('beds')) || [];
-      const storedAllocations = JSON.parse(localStorage.getItem('allocations')) || [];
-      setBeds(storedBeds);
-      setAllocations(storedAllocations);
-    } catch (error) {
-      console.error('Error loading data from localStorage:', error);
-    }
+      setBeds(JSON.parse(localStorage.getItem('beds') || '[]'));
+      setAllocations(JSON.parse(localStorage.getItem('allocations') || '[]'));
+    } catch {}
   }, []);
 
-  // Debounce function to reduce frequent writes to localStorage
-  const debounce = (func, delay) => {
-    let timer;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => func(...args), delay);
-    };
+  const saveBeds = (updated) => { setBeds(updated); localStorage.setItem('beds', JSON.stringify(updated)); };
+  const saveAllocations = (updated) => { setAllocations(updated); localStorage.setItem('allocations', JSON.stringify(updated)); };
+
+  const notify = (text, type = 'success') => {
+    setMessage({ text, type });
+    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
   };
-
-  // Save beds to localStorage with debounce
-  const saveBedsToLocalStorage = debounce((beds) => {
-    try {
-      localStorage.setItem('beds', JSON.stringify(beds));
-    } catch (error) {
-      console.error('Error saving beds to localStorage:', error);
-    }
-  }, 500);
-
-  // Save allocations to localStorage with debounce
-  const saveAllocationsToLocalStorage = debounce((allocations) => {
-    try {
-      localStorage.setItem('allocations', JSON.stringify(allocations));
-    } catch (error) {
-      console.error('Error saving allocations to localStorage:', error);
-    }
-  }, 500);
-
-  // Update localStorage whenever beds or allocations change
-  useEffect(() => {
-    saveBedsToLocalStorage(beds);
-  }, [beds]);
-
-  useEffect(() => {
-    saveAllocationsToLocalStorage(allocations);
-  }, [allocations]);
 
   const handleAddBed = (e) => {
     e.preventDefault();
-    if (!newBedName) {
-      alert('Enter bed name!');
-      return;
-    }
-
-    // Check for duplicate bed names
-    if (beds.some((bed) => bed.name === newBedName)) {
-      alert('Bed name already exists!');
-      return;
-    }
-
-    const newBed = {
-      id: Date.now(), // Unique ID
-      name: newBedName,
-      status: 'Free',
-    };
-    setBeds([...beds, newBed]);
+    if (!newBedName.trim()) { notify('Enter a bed identifier.', 'error'); return; }
+    if (beds.some(b => b.name === newBedName.trim())) { notify('Bed name already exists.', 'error'); return; }
+    saveBeds([...beds, { id: Date.now(), name: newBedName.trim(), status: 'Available' }]);
     setNewBedName('');
+    notify('Bed added successfully.');
   };
 
-  const handleAllocateBed = (e) => {
+  const handleAllocate = (e) => {
     e.preventDefault();
-    if (!selectedBedId || !patientName || !date) {
-      alert('Please fill all fields');
-      return;
-    }
-
-    const bedIndex = beds.findIndex((bed) => bed.id === parseInt(selectedBedId));
-    if (bedIndex === -1 || beds[bedIndex].status !== 'Free') {
-      alert('Selected bed is not free!');
-      return;
-    }
-
+    if (!selectedBedId || !patientName || !allocationDate) { notify('Please fill all fields.', 'error'); return; }
+    const bedIdx = beds.findIndex(b => b.id === parseInt(selectedBedId));
+    if (bedIdx === -1 || beds[bedIdx].status !== 'Available') { notify('Selected bed is not available.', 'error'); return; }
     const updatedBeds = [...beds];
-    updatedBeds[bedIndex].status = 'Occupied';
-    setBeds(updatedBeds);
-
-    const allocation = {
-      id: Date.now(),
-      bedName: updatedBeds[bedIndex].name,
-      patientName,
-      date,
-    };
-    setAllocations([...allocations, allocation]);
-
-    setSelectedBedId('');
-    setPatientName('');
-    setDate('');
+    updatedBeds[bedIdx] = { ...updatedBeds[bedIdx], status: 'Occupied' };
+    saveBeds(updatedBeds);
+    saveAllocations([...allocations, { id: Date.now(), bedName: updatedBeds[bedIdx].name, patientName, date: allocationDate }]);
+    setSelectedBedId(''); setPatientName(''); setAllocationDate('');
+    notify('Bed allocated successfully.');
   };
 
-  const handleCancelAllocation = (allocationId) => {
-    const confirmCancel = window.confirm('Are you sure you want to cancel this allocation?');
-    if (!confirmCancel) return;
-
-    const allocation = allocations.find((a) => a.id === allocationId);
-    if (!allocation) return;
-
-    const updatedBeds = beds.map((bed) =>
-      bed.name === allocation.bedName ? { ...bed, status: 'Free' } : bed
-    );
-    setBeds(updatedBeds);
-
-    const updatedAllocations = allocations.filter((a) => a.id !== allocationId);
-    setAllocations(updatedAllocations);
+  const handleRelease = (allocationId) => {
+    if (!window.confirm('Release this bed?')) return;
+    const alloc = allocations.find(a => a.id === allocationId);
+    if (!alloc) return;
+    saveBeds(beds.map(b => b.name === alloc.bedName ? { ...b, status: 'Available' } : b));
+    saveAllocations(allocations.filter(a => a.id !== allocationId));
+    notify('Bed released successfully.');
   };
 
-  const filteredBeds = beds.filter((bed) =>
-    bed.name.toLowerCase().includes(filter.toLowerCase())
-  );
-
-  const handleExport = () => {
-    const data = {
-      beds,
-      allocations,
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'hospital_data.json';
-    a.click();
-  };
+  const filteredBeds = beds.filter(b => b.name.toLowerCase().includes(filter.toLowerCase()));
+  const freeBeds = beds.filter(b => b.status === 'Available');
+  const occupiedBeds = beds.filter(b => b.status === 'Occupied');
 
   return (
-    
-    <div style={{ padding: '20px' }}className='Allocate'>
-      <h2>Allocate Resources - Admin Panel</h2>
-
-      {/* Add Beds */}
-      <section style={{ marginBottom: '30px' }}>
-        <h3>Add New Bed</h3>
-        <form onSubmit={handleAddBed}>
-          <input
-            type="text"
-            value={newBedName}
-            onChange={(e) => setNewBedName(e.target.value)}
-            placeholder="Enter new bed name"
-          />
-          <button type="submit" style={{ marginLeft: '10px' }}>Add Bed</button>
-        </form>
-      </section>
-
-      {/* Show Beds */}
-      <section style={{ marginBottom: '30px' }}>
-        <h3>All Beds</h3>
-        <input
-          type="text"
-          placeholder="Search beds..."
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        />
-        <table border="1" cellPadding="8">
-          <thead>
-            <tr>
-              <th>Bed Name</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredBeds.map((bed) => (
-              <tr key={bed.id}>
-                <td>{bed.name}</td>
-                <td style={{ color: bed.status === 'Free' ? 'green' : 'red' }}>{bed.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-
-      {/* Allocate Bed */}
-      <section style={{ marginBottom: '30px' }}>
-        <h3>Allocate Bed to Patient</h3>
-        <form onSubmit={handleAllocateBed}>
+    <div className="page-wrapper">
+      <div className="page-content">
+        <div className="dash-header">
           <div>
-            <label>Patient Name: </label>
-            <input
-              type="text"
-              value={patientName}
-              onChange={(e) => setPatientName(e.target.value)}
-              placeholder="Enter patient name"
-            />
+            <h1>Resource Allocation</h1>
+            <p className="text-muted">Manage hospital bed inventory and patient allocations.</p>
+          </div>
+        </div>
+
+        {message.text && (
+          <div className={`alert alert-${message.type === 'error' ? 'error' : 'success'}`}>{message.text}</div>
+        )}
+
+        {/* Stats */}
+        <div className="grid-3" style={{ marginBottom: '2rem' }}>
+          <div className="stat-card" style={{ borderLeftColor: '#0f4c81' }}>
+            <div className="stat-card-icon" style={{ background: '#dbeafe' }}>🏥</div>
+            <div className="stat-card-info"><h3>{beds.length}</h3><p>Total Beds</p></div>
+          </div>
+          <div className="stat-card" style={{ borderLeftColor: '#10b981' }}>
+            <div className="stat-card-icon" style={{ background: '#d1fae5' }}>✅</div>
+            <div className="stat-card-info"><h3>{freeBeds.length}</h3><p>Available</p></div>
+          </div>
+          <div className="stat-card" style={{ borderLeftColor: '#ef4444' }}>
+            <div className="stat-card-icon" style={{ background: '#fee2e2' }}>🔴</div>
+            <div className="stat-card-info"><h3>{occupiedBeds.length}</h3><p>Occupied</p></div>
+          </div>
+        </div>
+
+        <div className="resources-layout">
+          {/* Left Column: Forms */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {/* Add Bed */}
+            <div className="card">
+              <h3 style={{ marginBottom: '1rem' }}>➕ Add New Bed</h3>
+              <form onSubmit={handleAddBed} style={{ display: 'flex', gap: '10px' }}>
+                <input className="form-control" placeholder="e.g. Ward A - Bed 1" value={newBedName}
+                  onChange={e => setNewBedName(e.target.value)} style={{ flex: 1 }} />
+                <button type="submit" className="btn btn-primary">Add</button>
+              </form>
+            </div>
+
+            {/* Allocate Bed */}
+            <div className="card">
+              <h3 style={{ marginBottom: '1rem' }}>🏥 Allocate Bed to Patient</h3>
+              <form onSubmit={handleAllocate} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Patient Name *</label>
+                  <input className="form-control" placeholder="Patient's full name" value={patientName}
+                    onChange={e => setPatientName(e.target.value)} required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Select Available Bed *</label>
+                  <select className="form-control" value={selectedBedId} onChange={e => setSelectedBedId(e.target.value)} required>
+                    <option value="">— Select a Bed —</option>
+                    {freeBeds.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Admission Date *</label>
+                  <input type="date" className="form-control" value={allocationDate}
+                    onChange={e => setAllocationDate(e.target.value)} required />
+                </div>
+                <button type="submit" className="btn btn-primary">Allocate Bed</button>
+              </form>
+            </div>
           </div>
 
-          <div>
-            <label>Select Free Bed: </label>
-            <select
-              value={selectedBedId}
-              onChange={(e) => setSelectedBedId(e.target.value)}
-            >
-              <option value="">Select Bed</option>
-              {beds.filter((bed) => bed.status === 'Free').map((bed) => (
-                <option key={bed.id} value={bed.id}>{bed.name}</option>
-              ))}
-            </select>
+          {/* Right Column: Tables */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {/* Beds Table */}
+            <div>
+              <div className="section-heading">
+                <h2>All Beds</h2>
+                <input className="form-control" placeholder="Search..." value={filter}
+                  onChange={e => setFilter(e.target.value)} style={{ width: 200 }} />
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="data-table">
+                  <thead><tr><th>Bed Identifier</th><th>Status</th></tr></thead>
+                  <tbody>
+                    {filteredBeds.length === 0
+                      ? <tr><td colSpan="2" style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-secondary)' }}>No beds added yet.</td></tr>
+                      : filteredBeds.map(b => (
+                        <tr key={b.id}>
+                          <td style={{ fontWeight: 500 }}>{b.name}</td>
+                          <td><span className={`badge ${b.status === 'Available' ? 'badge-success' : 'badge-danger'}`}>{b.status}</span></td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Allocations Table */}
+            <div>
+              <div className="section-heading"><h2>Current Allocations</h2></div>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="data-table">
+                  <thead><tr><th>Patient</th><th>Bed</th><th>Date</th><th>Action</th></tr></thead>
+                  <tbody>
+                    {allocations.length === 0
+                      ? <tr><td colSpan="4" style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-secondary)' }}>No active allocations.</td></tr>
+                      : allocations.map(a => (
+                        <tr key={a.id}>
+                          <td style={{ fontWeight: 500 }}>{a.patientName}</td>
+                          <td>{a.bedName}</td>
+                          <td className="text-sm text-muted">{a.date}</td>
+                          <td>
+                            <button className="btn btn-sm" style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fbbf24' }}
+                              onClick={() => handleRelease(a.id)}>
+                              Release Bed
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-
-          <div>
-            <label>Date: </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </div>
-
-          <button type="submit" style={{ marginTop: '10px' }}>Allocate Bed</button>
-        </form>
-      </section>
-
-      {/* Allocations */}
-      <section>
-        <h3>Current Allocations</h3>
-        <table border="1" cellPadding="8">
-          <thead>
-            <tr>
-              <th>Patient Name</th>
-              <th>Bed Name</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allocations.map((allocation) => (
-              <tr key={allocation.id}>
-                <td>{allocation.patientName}</td>
-                <td>{allocation.bedName}</td>
-                <td>{allocation.date}</td>
-                <td>
-                  <button onClick={() => handleCancelAllocation(allocation.id)}>
-                    Cancel Allocation
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {allocations.length === 0 && (
-              <tr>
-                <td colSpan="4" style={{ textAlign: 'center' }}>No Allocations Yet</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </section>
+        </div>
+      </div>
     </div>
   );
 };

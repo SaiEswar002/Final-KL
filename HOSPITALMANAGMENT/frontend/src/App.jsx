@@ -1,64 +1,61 @@
-import React, { useState } from 'react'; // Added useState
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './Common/Header';
+
+// Layout
+import Navbar from './Common/Navbar';
 import Footer from './Common/Footer';
-import Home from './pages/Home';
-import AboutPage from './pages/AboutPage';
+
+// Public Pages
+import HomePage from './pages/HomePage';
 import ContactPage from './pages/ContactPage';
-import Login from './Auth/Login'; // Correctly import Login as a default export
-import AdminLogin from './Auth/AdminLogin';
-import DoctorsCombined from './pages/DoctorsCombined'; // Import DoctorsCombined component
-// import Services from './pages/Services'; // Import DoctorsCombined component
-import DoctorDashboard from './Doctor/DoctorDashboard';
+import DoctorsPage from './pages/DoctorsPage';
+
+// Auth
+import Login from './Auth/Login';
+
+// Admin Pages
 import AdminDashboard from './Admin/AdminDashboard';
-import PostAppointments from './Admin/PostAppointments'; // Import PostAppointments component
-import ViewAppointments from './Admin/ViewAppointments'; // Import ViewAppointments component
+import ManageUsers from './Admin/ManageStaff';
+import PostAppointments from './Admin/PostAppointments';
+import ViewAppointments from './Admin/ViewAppointments';
 import AllocateResources from './Admin/AllocateResources';
-import ManageStaff from './Admin/ManageStaff'; // Import ManageStaff component
-import UserProfile from './Patient/UserProfile'; // Using UserProfile instead of PatientProfile
-import BookAppointment from './Patient/BookAppointment'; // Import BookAppointment component
-import Payment from './Patient/Payment'; // Import Payment component
-import ViewBooking from './Patient/ViewBooking'; // Import ViewBooking component
+
+// Doctor Pages
+import DoctorDashboard from './Doctor/DoctorDashboard';
+
+// Patient Pages
+import PatientDashboard from './Patient/UserProfile';
+import BookAppointment from './Patient/BookAppointment';
+import ConfirmBooking from './Patient/Payment';
+import BookingHistory from './Patient/ViewBooking';
 
 function App() {
-  const [userRole, setUserRole] = useState(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const user = JSON.parse(storedUser);
-        return user.role;
-      } catch (e) {
-        console.error('Invalid user data in localStorage');
-      }
-    }
-    return null;
-  });
-
   return (
     <Router>
-      <Header userRole={userRole} setUserRole={setUserRole} />
-      <div style={{ padding: '2rem' }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/post-appointments" element={<PostAppointments />} />
-          <Route path="/admin/view-appointments" element={<ViewAppointments />} />
-          <Route path="/admin/allocate-resources" element={<AllocateResources />} />
-          <Route path="/admin/manage-staff" element={<ManageStaff />} /> {/* Added ManageStaff route */}
-          <Route path="/user-profile" element={<UserProfile />} />
-          <Route path="/book-appointment" element={<BookAppointment />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/view-booking" element={<ViewBooking />} />
-          <Route path="/doctors" element={<DoctorsCombined />} />
-          {/* <Route path="/Services" element={<Services />} /> */}
+      <Navbar />
+      <Routes>
+        {/* Public */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/doctors" element={<DoctorsPage />} />
+        <Route path="/login" element={<Login />} />
 
-        </Routes>
-      </div>
+        {/* Admin */}
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/manage-users" element={<ManageUsers />} />
+        <Route path="/admin/post-appointment" element={<PostAppointments />} />
+        <Route path="/admin/view-appointments" element={<ViewAppointments />} />
+        <Route path="/admin/allocate-resources" element={<AllocateResources />} />
+
+        {/* Doctor */}
+        <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+
+        {/* Patient */}
+        <Route path="/patient/dashboard" element={<PatientDashboard />} />
+        <Route path="/book-appointment" element={<BookAppointment />} />
+        <Route path="/payment" element={<ConfirmBooking />} />
+        <Route path="/booking-history" element={<BookingHistory />} />
+      </Routes>
       <Footer />
     </Router>
   );

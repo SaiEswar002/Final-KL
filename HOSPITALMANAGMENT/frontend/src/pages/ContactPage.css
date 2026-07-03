@@ -1,128 +1,83 @@
-/* General Styles */
-body, html {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-  background-color: #ffffff; /* White background */
-  color: #333;
-}
+/* Contact Page Styles */
 
 .contact-page {
-  padding: 20px;
-  background-color: #ffffff; /* White background */
-  color: #333;
+  padding-top: 2rem;
 }
 
-.contact-page h1 {
+.contact-header {
   text-align: center;
-  font-size: 2.5rem;
-  color: #3b82f6; /* Blue color for the header */
-  margin-bottom: 20px;
+  margin-bottom: 3rem;
 }
 
-.contact-intro {
-  text-align: center;
-  font-size: 1.2rem;
-  margin-bottom: 30px;
+.contact-header h1 { font-size: 2rem; margin-bottom: 8px; }
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 2rem;
+  align-items: start;
 }
 
-.contact-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
+/* Info Panel */
+.contact-info-panel {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
 }
 
-.contact-info, .contact-form {
-  background-color: #ffffff; /* White background */
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  flex: 1 1 400px;
-  max-width: 500px;
-}
+.contact-info-panel h2 { font-size: 1.3rem; margin-bottom: 1.5rem; }
 
-.contact-info h2, .contact-form h2 {
-  color: #3b82f6; /* Blue color for subheadings */
-  margin-bottom: 15px;
-}
-
-.contact-info p {
-  font-size: 1rem;
-  margin-bottom: 10px;
-}
-
-.contact-form form {
+.contact-info-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
 }
 
-.form-group {
+.contact-info-item {
   display: flex;
-  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
 }
 
-.form-group label {
-  font-size: 1rem;
-  margin-bottom: 5px;
-  color: #555;
+.contact-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
-.form-group input, .form-group textarea {
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  outline: none;
+.contact-item-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
 }
 
-.form-group input:focus, .form-group textarea:focus {
-  border-color: #3b82f6; /* Blue border on focus */
+.contact-item-value {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+  line-height: 1.5;
 }
 
-.submit-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  color: white;
-  background-color: #3b82f6; /* Blue color for the submit button */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+/* Emergency */
+.contact-emergency {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  border: 1px solid #fca5a5;
+  border-radius: var(--border-radius);
+  padding: 1.2rem;
 }
 
-.submit-button:hover {
-  background-color: #1D4ED8; /* Darker blue on hover */
-}
+.contact-emergency h3 { font-size: 15px; color: #991b1b; margin-bottom: 6px; }
+.contact-emergency p { font-size: 13px; color: #7f1d1d; line-height: 1.5; }
 
-/* Why Contact Us Section */
-.why-contact-us {
-  margin-top: 30px;
-  background-color: #ffffff; /* White background */
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
-  margin: 30px auto;
-}
+/* Form Panel */
+.contact-form-panel h2 { font-size: 1.3rem; }
 
-.why-contact-us h2 {
-  text-align: center;
-  color: #3b82f6; /* Blue color for subheadings */
-  margin-bottom: 15px;
-}
-
-.why-contact-us ul {
-  list-style-type: disc;
-  padding-left: 20px;
-  font-size: 1rem;
-  color: #555;
-}
-
-.why-contact-us li {
-  margin-bottom: 10px;
+@media (max-width: 768px) {
+  .contact-grid { grid-template-columns: 1fr; }
 }

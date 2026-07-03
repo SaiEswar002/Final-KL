@@ -1,47 +1,56 @@
 import axios from 'axios';
 
-// Base URLs for different APIs
-const USER_API_BASE_URL = 'http://localhost:8091/api/users'; // Base URL for user-related APIs
-const BOOKING_API_BASE_URL = 'http://localhost:8091/api/bookings'; // Base URL for booking-related APIs
+const BASE_URL = 'http://localhost:8091';
+const USER_API = `${BASE_URL}/api/users`;
+const BOOKING_API = `${BASE_URL}/api/appointments`;
+const DOCTOR_API = `${BASE_URL}/api/doctors`;
 
-// API functions to interact with the backend
-const userApi = {
-  registerUser: async (formData) => {
-    return axios.post(`${USER_API_BASE_URL}/register`, formData, {
+export const userApi = {
+  registerUser: (formData) =>
+    axios.post(`${USER_API}/register`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  },
-  loginUser: async (email, password) => {
-    return axios.post(`${USER_API_BASE_URL}/login`, { email, password });
-  },
-  logoutUser: async (email) => {
-    return axios.post(`${USER_API_BASE_URL}/logout`, null, { params: { email } });
-  },
-  getUserByEmail: async (email) => {
-    return axios.get(`${USER_API_BASE_URL}/user`, { params: { email } });
-  },
-  updateUser: async (id, updatedUser) => {
-    return axios.put(`${USER_API_BASE_URL}/update/${id}`, updatedUser);
-  },
-  getAllUsers: async () => {
-    return axios.get(`${USER_API_BASE_URL}/all`);
-  },
-  deleteUser: async (id) => {
-    return axios.delete(`${USER_API_BASE_URL}/${id}`);
-  },
+    }),
+
+  loginUser: (email, password) =>
+    axios.post(`${USER_API}/login`, { email, password }),
+
+  getUserByEmail: (email) =>
+    axios.get(`${USER_API}/user`, { params: { email } }),
+
+  getUserById: (id) =>
+    axios.get(`${USER_API}/${id}`),
+
+  updateUser: (id, updatedUser) =>
+    axios.put(`${USER_API}/update/${id}`, updatedUser),
+
+  getAllUsers: () =>
+    axios.get(`${USER_API}/all`),
+
+  deleteUser: (id) =>
+    axios.delete(`${USER_API}/${id}`),
 };
 
-const bookingApi = {
-  createBooking: async (bookingData) => {
-    return axios.post(`${BOOKING_API_BASE_URL}`, bookingData);
-  },
-  getBookingsByUserId: async (userId) => {
-    return axios.get(`${BOOKING_API_BASE_URL}/${userId}`);
-  },
-  getAllBookings: async () => {
-    return axios.get(`${BOOKING_API_BASE_URL}`);
-  },
+export const bookingApi = {
+  createBooking: (bookingData) =>
+    axios.post(BOOKING_API, bookingData),
+
+  getBookingsByUserId: (userId) =>
+    axios.get(`${BOOKING_API}/user/${userId}`),
+
+  getAllBookings: () =>
+    axios.get(BOOKING_API),
+
+  cancelBooking: (id) =>
+    axios.put(`${BOOKING_API}/${id}/cancel`),
+
+  deleteBooking: (id) =>
+    axios.delete(`${BOOKING_API}/${id}`),
 };
 
-// Export userApi and bookingApi as named exports
-export { userApi, bookingApi };
+export const doctorApi = {
+  getAllDoctors: () =>
+    axios.get(DOCTOR_API),
+
+  getDoctorById: (id) =>
+    axios.get(`${DOCTOR_API}/${id}`),
+};

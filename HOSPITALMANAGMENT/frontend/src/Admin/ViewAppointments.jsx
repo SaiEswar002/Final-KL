@@ -1,77 +1,141 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const ViewAppointments = () => {
   const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
-    // Fetch appointments from localStorage
-    const storedAppointments = JSON.parse(localStorage.getItem('appointments')) || [];
-    setAppointments(storedAppointments);
+    const fetchAppointments = async () => {
+      try {
+        const res = await axios.get('http://localhost:8091/api/appointments');
+        setAppointments(res.data);
+      } catch {
+        setAppointments([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAppointments();
   }, []);
 
-  const handleDelete = (index) => {
-    // Remove the selected appointment
-    const updatedAppointments = appointments.filter((_, i) => i !== index);
-
-    // Update localStorage and state
-    localStorage.setItem('appointments', JSON.stringify(updatedAppointments));
-    setAppointments(updatedAppointments);
-
-    alert('Appointment deleted successfully!');
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this appointment record?')) return;
+    try {
+      await axios.delete(`http://localhost:8091/api/appointments/${id}`);
+      setAppointments(prev => prev.filter(a => a.id !== id));
+    } catch {
+      alert('Failed to delete appointment.');
+    }
   };
 
+  const handleCancel = async (id) => {
+    try {
+      await axios.put(`http://localhost:8091/api/appointments/${id}/cancel`);
+      setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'cancelled' } : a));
+    } catch {
+      alert('Failed to cancel appointment.');
+    }
+  };
+
+  const filtered = appointments.filter(a => {
+    const matchSearch = a.doctor?.toLowerCase().includes(search.toLowerCase()) ||
+                        a.hospital?.toLowerCase().includes(search.toLowerCase());
+    const matchStatus = filterStatus === 'all' || a.status === filterStatus;
+    return matchSearch && matchStatus;
+  });
+
+  if (loading) return <div className="page-wrapper"><div className="loading-spinner"><div className="spinner" /></div></div>;
+
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-      <h2 style={{ textAlign: 'center', color: '#007bff' }}>View Appointments</h2>
-      {appointments.length === 0 ? (
-        <p style={{ textAlign: 'center', color: '#555' }}>No appointments available.</p>
-      ) : (
-        <table
-          style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            marginTop: '20px',
-          }}
-        >
-          <thead>
-            <tr style={{ backgroundColor: '#3b82f6', textAlign: 'left' }}>
-              <th>Hospital</th>
-              <th style={{ padding: '10px', border: '1px solid #ddd' }}>Doctor</th>
-              <th style={{ padding: '10px', border: '1px solid #ddd' }}>Date</th>
-              <th style={{ padding: '10px', border: '1px solid #ddd' }}>Time Slot</th>
-              <th style={{ padding: '10px', border: '1px solid #ddd' }}>Description</th>
-              <th style={{ padding: '10px', border: '1px solid #ddd' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {appointments.map((appointment, index) => (
-              <tr key={index}>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>{appointment.hospital}</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>{appointment.doctor}</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>{appointment.date}</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>{appointment.timeSlot}</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>{appointment.description}</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>
-                  <button
-                    onClick={() => handleDelete(index)}
-                    style={{
-                      backgroundColor: '#dc3545',
-                      color: 'white',
-                      border: 'none',
-                      padding: '5px 10px',
-                      borderRadius: '5px',
-                      cursor: 'pointer',
-                      marginRight: '5px',
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td>
+    <div className="page-wrapper">
+      <div className="page-content">
+        <div className="dash-header">
+          <div>
+            <h1>All Appointments</h1>
+            <p className="text-muted">{appointments.length} total appointments in the system</p>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid-3" style={{ marginBottom: '1.5rem' }}>
+          {[
+            { label: 'Total', count: appointments.length, color: '#0f4c81', bg: '#dbeafe', icon: '📅' },
+            { label: 'Booked', count: appointments.filter(a => a.status === 'booked').length, color: '#10b981', bg: '#d1fae5', icon: '✅' },
+            { label: 'Cancelled', count: appointments.filter(a => a.status === 'cancelled').length, color: '#ef4444', bg: '#fee2e2', icon: '❌' },
+          ].map(s => (
+            <div key={s.label} className="stat-card" style={{ borderLeftColor: s.color }}>
+              <div className="stat-card-icon" style={{ background: s.bg }}>{s.icon}</div>
+              <div className="stat-card-info"><h3>{s.count}</h3><p>{s.label} Appointments</p></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Filters */}
+        <div className="filters-bar">
+          <input className="form-control search-input" placeholder="🔍  Search by doctor or hospital..."
+            value={search} onChange={e => setSearch(e.target.value)} />
+          <select className="form-control role-select" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+            <option value="all">All Status</option>
+            <option value="booked">Booked</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: 'auto' }}>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Hospital</th>
+                <th>Doctor</th>
+                <th>Date</th>
+                <th>Time Slot</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
+                    No appointments found.
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((a, idx) => (
+                  <tr key={a.id}>
+                    <td className="text-muted text-sm">{idx + 1}</td>
+                    <td style={{ fontWeight: 500 }}>{a.hospital}</td>
+                    <td>{a.doctor}</td>
+                    <td>{a.date}</td>
+                    <td className="text-sm">{a.timeSlot}</td>
+                    <td>
+                      <span className={`badge ${a.status === 'booked' ? 'badge-success' : a.status === 'cancelled' ? 'badge-danger' : 'badge-secondary'}`}>
+                        {a.status}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        {a.status === 'booked' && (
+                          <button className="btn btn-sm" style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fbbf24' }}
+                            onClick={() => handleCancel(a.id)}>
+                            Cancel
+                          </button>
+                        )}
+                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(a.id)}>Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

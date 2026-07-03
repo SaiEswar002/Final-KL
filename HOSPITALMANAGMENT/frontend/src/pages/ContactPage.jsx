@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
-import emailjs from '@emailjs/browser'; // Make sure you installed it: npm install @emailjs/browser
+import React from 'react';
+import { useRef } from 'react';
+import emailjs from '@emailjs/browser';
 import './ContactPage.css';
 
 const ContactPage = () => {
@@ -7,65 +8,81 @@ const ContactPage = () => {
 
   const sendEmail = (e) => {
     e.preventDefault();
-
     emailjs.sendForm('service_hyu2qmf', 'template_rnlaojd', form.current, 'uj8z9EGSVLPtle8lT')
-      .then((result) => {
-          console.log('Message sent successfully:', result.text);
-          alert('✅ Your message has been sent successfully!');
-          form.current.reset(); // Clear the form
-      }, (error) => {
-          console.error('Failed to send message:', error.text);
-          alert('❌ Failed to send message. Please try again later.');
+      .then(() => {
+        alert('✅ Your message has been sent successfully!');
+        form.current.reset();
+      })
+      .catch(() => {
+        alert('❌ Failed to send message. Please try again later.');
       });
   };
 
   return (
-    <div className="contact-page">
-      <h1>Contact Us</h1>
-      <p className="contact-intro">
-        We are here to assist you. Feel free to reach out to us through any of the following methods.
-      </p>
-
-      <div className="contact-container">
-        {/* Contact Information */}
-        <div className="contact-info">
-          <h2>Our Contact Details</h2>
-          <p><strong>Address:</strong> Tadepalle (Near Kanaka Durga Varadhi)</p>
-          <p><strong>Phone:</strong> 0866-2536535</p>
-          <p><strong>Email:</strong> HospitalManagement System@gmail.com</p>
-          <p><strong>Working Hours:</strong> Mon - Sat: 9:00 AM - 6:00 PM</p>
+    <div className="page-wrapper">
+      <div className="page-content contact-page">
+        <div className="contact-header">
+          <h1>Contact Us</h1>
+          <p className="text-muted">We are here to help. Reach out through the form or use the details below.</p>
         </div>
 
-        {/* Contact Form */}
-        <div className="contact-form">
-          <h2>Send Us a Message</h2>
-          <form ref={form} onSubmit={sendEmail}>
-            <div className="form-group">
-              <label htmlFor="name">Name</label>
-              <input type="text" id="name" name="name" placeholder="Your Name" required />
+        <div className="contact-grid">
+          {/* Info Side */}
+          <div className="contact-info-panel">
+            <h2>Get In Touch</h2>
+            <div className="contact-info-list">
+              {[
+                { icon: '📍', label: 'Address', value: 'Tadepalle (Near Kanaka Durga Varadhi), Andhra Pradesh' },
+                { icon: '📞', label: 'Phone', value: '0866-2536535' },
+                { icon: '✉️', label: 'Email', value: 'info@klhospital.com' },
+                { icon: '🕒', label: 'Hours', value: 'Mon – Sat: 9:00 AM – 6:00 PM' },
+              ].map(({ icon, label, value }) => (
+                <div key={label} className="contact-info-item">
+                  <span className="contact-icon">{icon}</span>
+                  <div>
+                    <div className="contact-item-label">{label}</div>
+                    <div className="contact-item-value">{value}</div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input type="email" id="email" name="email" placeholder="Your Email" required />
-            </div>
-            <div className="form-group">
-              <label htmlFor="message">Message</label>
-              <textarea id="message" name="message" rows="5" placeholder="Your Message" required></textarea>
-            </div>
-            <button type="submit" className="submit-button">Submit</button>
-          </form>
-        </div>
-      </div>
 
-      {/* Why Contact Us Section */}
-      <div className="why-contact-us">
-        <h2>Why Contact Us?</h2>
-        <ul>
-          <li>Get answers to your healthcare-related queries.</li>
-          <li>Schedule appointments with our specialists.</li>
-          <li>Provide feedback to help us improve our services.</li>
-          <li>Learn more about our facilities and offerings.</li>
-        </ul>
+            <div className="contact-emergency">
+              <h3>🚨 Emergency?</h3>
+              <p>For medical emergencies, please call our 24/7 helpline immediately.</p>
+              <a href="tel:08662536535" className="btn btn-danger" style={{ marginTop: '12px' }}>
+                Call Now: 0866-2536535
+              </a>
+            </div>
+          </div>
+
+          {/* Form Side */}
+          <div className="card contact-form-panel">
+            <h2 style={{ marginBottom: '1.5rem' }}>Send Us a Message</h2>
+            <form ref={form} onSubmit={sendEmail}>
+              <div className="form-group">
+                <label className="form-label">Your Name *</label>
+                <input type="text" name="name" className="form-control" placeholder="Full name" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Email Address *</label>
+                <input type="email" name="email" className="form-control" placeholder="you@example.com" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Subject</label>
+                <input type="text" name="subject" className="form-control" placeholder="How can we help?" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Message *</label>
+                <textarea name="message" className="form-control" rows="5"
+                  placeholder="Describe your query..." required style={{ resize: 'vertical' }} />
+              </div>
+              <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
+                Send Message →
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );
