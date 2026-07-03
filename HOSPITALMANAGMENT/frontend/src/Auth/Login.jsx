@@ -58,8 +58,10 @@ function Login() {
     try {
       if (isLogin) {
         const res = await userApi.loginUser(formData.email, formData.password);
+        // Backend returns AuthResponse: { token, id, username, email, role, ... }
         const user = res.data;
-        if (user?.email) {
+        if (user?.token) {
+          // Store full AuthResponse (includes JWT token for subsequent API calls)
           localStorage.setItem('user', JSON.stringify(user));
           setMessage({ text: 'Login successful! Redirecting...', type: 'success' });
           setTimeout(() => {
