@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { bookingApi } from '../api';
 
+/* Safe date display — prevents malformed date strings (e.g. 5678-04-23) from rendering raw */
+const formatDate = (dateStr) => {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr; // fallback to raw string
+  const year = d.getFullYear();
+  if (year > 2100 || year < 2000) return dateStr; // guard against corrupt timestamps
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+};
+
+
 const BookingHistory = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -71,7 +82,7 @@ const BookingHistory = () => {
                     <td className="text-muted text-sm">{idx + 1}</td>
                     <td style={{ fontWeight: 500 }}>{a.hospital}</td>
                     <td>Dr. {a.doctor}</td>
-                    <td>{a.date}</td>
+                    <td>{formatDate(a.date)}</td>
                     <td className="text-sm text-muted">{a.timeSlot}</td>
                     <td>
                       <span className={`badge ${a.status === 'booked' ? 'badge-success' : a.status === 'cancelled' ? 'badge-danger' : 'badge-secondary'}`}>

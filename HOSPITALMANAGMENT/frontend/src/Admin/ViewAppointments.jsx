@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { bookingApi } from '../api';
 
+const formatDate = (dateStr) => {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  const year = d.getFullYear();
+  if (year > 2100 || year < 2000) return dateStr;
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+};
+
 const ViewAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,7 +120,7 @@ const ViewAppointments = () => {
                     <td className="text-muted text-sm">{idx + 1}</td>
                     <td style={{ fontWeight: 500 }}>{a.hospital}</td>
                     <td>{a.doctor}</td>
-                    <td>{a.date}</td>
+                    <td>{formatDate(a.date)}</td>
                     <td className="text-sm">{a.timeSlot}</td>
                     <td>
                       <span className={`badge ${a.status === 'booked' ? 'badge-success' : a.status === 'cancelled' ? 'badge-danger' : 'badge-secondary'}`}>

@@ -50,7 +50,15 @@ const PostAppointment = () => {
       setMessage({ text: 'Please fill in all required fields.', type: 'error' });
       return;
     }
-    setLoading(true);
+
+    // Validate: no past dates
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selected = new Date(form.date);
+    if (selected < today) {
+      setMessage({ text: 'Appointment date cannot be in the past. Please select a future date.', type: 'error' });
+      return;
+    }
     const existing = JSON.parse(localStorage.getItem('appointments') || '[]');
     const updated = [...existing, { ...form, id: Date.now() }];
     localStorage.setItem('appointments', JSON.stringify(updated));

@@ -1,61 +1,67 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { userApi, bookingApi, doctorApi } from '../api';
 import './HomePage.css';
 
+/* ---- Feature data (no emojis — using labels + index for styling) ---- */
 const features = [
   {
-    icon: '🩺',
     title: 'Doctor Management',
     desc: 'View and manage doctor profiles, specializations, and schedules across all departments.'
   },
   {
-    icon: '📅',
     title: 'Appointment Booking',
     desc: 'Patients can browse available slots and book appointments with their preferred doctors.'
   },
   {
-    icon: '🏥',
     title: 'Bed Allocation',
     desc: 'Track ward beds in real time. Admins can allocate and release beds to patients instantly.'
   },
   {
-    icon: '👥',
     title: 'Staff Management',
     desc: 'Manage hospital staff, assign departments, and monitor attendance and availability.'
   },
   {
-    icon: '📋',
     title: 'Booking History',
     desc: 'Patients have full visibility into their appointment history and booking statuses.'
   },
   {
-    icon: '📊',
     title: 'Admin Dashboard',
-    desc: 'A centralized dashboard with statistics, user management, and system overview for admins.'
+    desc: 'A centralized dashboard with live statistics, user management, and system overview.'
   }
 ];
 
-const stats = [
-  { label: 'Departments', value: '12+' },
-  { label: 'Doctors', value: '50+' },
-  { label: 'Patients Served', value: '1,200+' },
-  { label: 'Beds Available', value: '300+' },
-];
-
 const HomePage = () => {
+  const [stats, setStats] = useState({ doctors: '—', patients: '—', appointments: '—' });
+
+  useEffect(() => {
+    /* Fetch real counts for the stats strip */
+    Promise.allSettled([
+      doctorApi.getAllDoctors(),
+      bookingApi.getAllBookings(),
+    ]).then(([doctorsRes, appsRes]) => {
+      const doctorCount = doctorsRes.status === 'fulfilled' ? doctorsRes.value.data.length : '—';
+      const appsCount   = appsRes.status   === 'fulfilled' ? appsRes.value.data.length   : '—';
+      setStats({
+        doctors:      doctorCount,
+        appointments: appsCount,
+      });
+    });
+  }, []);
+
   return (
     <div className="homepage">
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
-          <div className="hero-badge">🏥 Hospital Management System</div>
+          <div className="hero-badge">Hospital Management System</div>
           <h1 className="hero-title">
             Streamlined Healthcare,<br />
             <span className="hero-highlight">Delivered with Precision</span>
           </h1>
           <p className="hero-desc">
-            A comprehensive digital platform for managing hospital operations — appointments, staff, resources,
-            and patient care — all in one place.
+            A comprehensive digital platform for managing hospital operations — appointments,
+            staff, resources, and patient care — all in one place.
           </p>
           <div className="hero-actions">
             <Link to="/login" className="btn btn-primary btn-lg">
@@ -69,24 +75,24 @@ const HomePage = () => {
         <div className="hero-visual">
           <div className="hero-card-stack">
             <div className="hero-float-card card-1">
-              <span className="card-emoji">📅</span>
+              <div className="hero-card-dot" />
               <div>
                 <div className="card-label">Next Appointment</div>
                 <div className="card-value">Today, 10:30 AM</div>
               </div>
             </div>
             <div className="hero-float-card card-2">
-              <span className="card-emoji">🩺</span>
+              <div className="hero-card-dot accent" />
               <div>
-                <div className="card-label">Available Doctors</div>
-                <div className="card-value">24 Online Now</div>
+                <div className="card-label">Registered Doctors</div>
+                <div className="card-value">{stats.doctors} Active</div>
               </div>
             </div>
             <div className="hero-float-card card-3">
-              <span className="card-emoji">🏥</span>
+              <div className="hero-card-dot navy" />
               <div>
-                <div className="card-label">Bed Occupancy</div>
-                <div className="card-value">78% Capacity</div>
+                <div className="card-label">Total Appointments</div>
+                <div className="card-value">{stats.appointments} Booked</div>
               </div>
             </div>
             <div className="hero-center-badge">
@@ -97,14 +103,24 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Stats Strip */}
+      {/* Stats Strip — real data from API */}
       <section className="stats-strip">
-        {stats.map((stat) => (
-          <div key={stat.label} className="stat-item">
-            <span className="stat-value">{stat.value}</span>
-            <span className="stat-label">{stat.label}</span>
-          </div>
-        ))}
+        <div className="stat-item">
+          <span className="stat-value">{stats.doctors}</span>
+          <span className="stat-label">Registered Doctors</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-value">{stats.appointments}</span>
+          <span className="stat-label">Appointments Booked</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-value">6</span>
+          <span className="stat-label">Hospital Departments</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-value">24/7</span>
+          <span className="stat-label">System Availability</span>
+        </div>
       </section>
 
       {/* Features Section */}
@@ -115,9 +131,9 @@ const HomePage = () => {
           Our system covers every aspect of hospital management, from patient bookings to resource allocation.
         </p>
         <div className="features-grid">
-          {features.map((f) => (
+          {features.map((f, i) => (
             <div key={f.title} className="feature-card">
-              <div className="feature-icon">{f.icon}</div>
+              <div className="feature-num">{String(i + 1).padStart(2, '0')}</div>
               <h3 className="feature-title">{f.title}</h3>
               <p className="feature-desc">{f.desc}</p>
             </div>
