@@ -10,6 +10,7 @@
 :root {
   /* Brand */
   --primary:        #0D2B4E;
+  --primary-dark:   #071929;
   --primary-hover:  #163d6d;
   --accent:         #0EA5A0;
   --accent-hover:   #0b8c88;
